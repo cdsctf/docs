@@ -6,7 +6,7 @@ hero:
   text: "An Open Source CTF Platform"
   tagline: High-performance, lightweight, and easy to use
   image:
-    src: /favicon.webp
+    src: /logo.svg
   actions:
     - theme: brand
       text: What is CdsCTF?

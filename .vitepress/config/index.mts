@@ -7,16 +7,14 @@ export default defineConfig({
 	title: "CdsCTF",
 	description:
 		"The CdsCTF project is an open-source, high-performance, Jeopardy-style's CTF platform. ",
-	head: [
-		["link", { rel: "icon", href: "/favicon.webp", type: "image/webp" }],
-	],
+	head: [["link", { rel: "icon", href: "/logo.svg" }]],
 	rewrites: {
 		"en/:rest*": ":rest*",
 	},
 	themeConfig: {
 		logo: {
-			light: "/favicon.webp",
-			dark: "/favicon.webp",
+			light: "/logo.svg",
+			dark: "/logo.svg",
 		},
 		socialLinks: [
 			{
