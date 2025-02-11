@@ -1,4 +1,4 @@
-# Docker + K8s
+# Docker + K3s
 
 先来解释一下关系，在这种部署方法中，CdsCTF 及其中间件（Kubernetes 除外）都依赖于 Docker 运行，而 K8s 则仅是作为 CdsCTF 的题目动态环境提供者。
 
@@ -178,32 +178,8 @@ clusters:
 
 解释一下原因，实际上需要对 Kubernetes 进行控制的是 CdsCTF 的 backend。那么对于 backend 而言，Kubernetes 并不存在于 `127.0.0.1`，而是在此 Docker 网络下的宿主机 `172.20.0.1`（通常最后一位是 `1`）。
 
-此时如果你在目录下运行 `docker compose up` 启动这个 Compose，你若发现 backend 的报错是无法连接 Cluster，我们需要为 K3s 重新配置一下证书，具体可参考 [Q&A](/zh/guide/qa/k3s-certs)。
+此时如果你在目录下运行 `docker compose up` 启动这个 Compose，你若发现 backend 的报错是无法连接 Cluster，我们需要为 K3s 重新配置一下证书，具体可参考 [Q&A](/zh/guide/qa/k3s-cert-reset)。
 
-如果顺利启动了，你可以通过 `http://127.0.0.1` 进入 CdsCTF，但你会发现 K3s 携带的 Traefik 可能拦截了你的请求，给了你一个 `404 page not found` 的返回，此时我们需要对 Traefik 做一些处理（或者你也可以改变 Nginx 的映射端口到 `80` 和 `443` 以外的端口）。
-
-我们通过改变 traefik 的 service 来解决：
-
-```bash
-kubectl -n kube-system edit service traefik
-```
-
-更改两个 `port`：
-
-```yaml
-ports:
-  - name: web
-    nodePort: ...
-    port: 8080
-    protocol: TCP
-    targetPort: web
-  - name: websecure
-    nodePort: ...
-    port: 8443
-    protocol: TCP
-    targetPort: websecure
-```
-
-这样一来，宿主机的 80 和 443 端口将由 Docker Compose 运行的 Nginx 接管。
+如果顺利启动了，你可以通过 `http://127.0.0.1` 进入 CdsCTF，但你会发现 K3s 携带的 Traefik 可能拦截了你的请求，给了你一个 `404 page not found` 的返回，此时我们需要对 Traefik 做一些处理（或者你也可以改变 Nginx 的映射端口到 `80` 和 `443` 以外的端口），参考 [这篇文章](/zh/guide/qa/k3s/traefik-adjust)。
 
 此时运行 `docker compose up -d`，即可顺利启动 CdsCTF。

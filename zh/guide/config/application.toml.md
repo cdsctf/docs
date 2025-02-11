@@ -2,7 +2,10 @@
 
 `application.toml` 是运行 CdsCTF 必需的文件。这里将详解每一个字段。
 
-这里先给一个示例文件
+> [!IMPORTANT]
+> 请注意，在修改了 `application.toml` 之后，一定需要重启 CdsCTF 实例，配置才能生效。
+
+这里先给一个示例文件：
 
 ```toml
 [meta]

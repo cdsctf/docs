@@ -28,12 +28,12 @@ export default defineConfig({
 					text: "部署",
 					items: [
 						{
-							text: "Docker + K8s",
-							link: "/zh/guide/deployment/docker-k8s",
+							text: "Docker + K3s",
+							link: "/zh/guide/deployment/docker-k3s",
 						},
 						{
-							text: "仅 K8s",
-							link: "/zh/guide/deployment/k8s-only",
+							text: "仅 K3s",
+							link: "/zh/guide/deployment/k3s-only",
 						},
 					],
 				},
@@ -47,11 +47,33 @@ export default defineConfig({
 					],
 				},
 				{
+					text: "功能",
+					items: [
+						{
+							text: "基础",
+							link: "/zh/guide/feature/basic",
+						},
+						{
+							text: "遥测",
+							link: "/zh/guide/feature/telemetry",
+						},
+					],
+				},
+				{
 					text: "Q&A",
 					items: [
 						{
-							text: "K3s 证书",
-							link: "/zh/guide/qa/k3s-certs",
+							text: "K3s",
+							items: [
+								{
+									text: "证书重置",
+									link: "/zh/guide/qa/k3s/cert-reset",
+								},
+								{
+									text: "Traefik 调整",
+									link: "/zh/guide/qa/k3s/traefik-adjust",
+								},
+							],
 						},
 					],
 				},
