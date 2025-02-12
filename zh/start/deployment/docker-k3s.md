@@ -178,8 +178,8 @@ clusters:
 
 解释一下原因，实际上需要对 Kubernetes 进行控制的是 CdsCTF 的 backend。那么对于 backend 而言，Kubernetes 并不存在于 `127.0.0.1`，而是在此 Docker 网络下的宿主机 `172.20.0.1`（通常最后一位是 `1`）。
 
-此时如果你在目录下运行 `docker compose up` 启动这个 Compose，你若发现 backend 的报错是无法连接 Cluster，我们需要为 K3s 重新配置一下证书，具体可参考 [Q&A](/zh/guide/qa/k3s/cert-reset)。
+此时如果你在目录下运行 `docker compose up` 启动这个 Compose，你若发现 backend 的报错是无法连接 Cluster，我们需要为 K3s 重新配置一下证书，具体可参考 [Q&A](/zh/start/qa/k3s/cert-reset)。
 
-如果顺利启动了，你可以通过 `http://127.0.0.1` 进入 CdsCTF，但你会发现 K3s 携带的 Traefik 可能拦截了你的请求，给了你一个 `404 page not found` 的返回，此时我们需要对 Traefik 做一些处理（或者你也可以改变 Nginx 的映射端口到 `80` 和 `443` 以外的端口），参考 [这篇文章](/zh/guide/qa/k3s/traefik-adjust)。
+如果顺利启动了，你可以通过 `http://127.0.0.1` 进入 CdsCTF，但你会发现 K3s 携带的 Traefik 可能拦截了你的请求，给了你一个 `404 page not found` 的返回，此时我们需要对 Traefik 做一些处理（或者你也可以改变 Nginx 的映射端口到 `80` 和 `443` 以外的端口），参考 [这篇文章](/zh/start/qa/k3s/traefik-adjust)。
 
 此时运行 `docker compose up -d`，即可顺利启动 CdsCTF。
