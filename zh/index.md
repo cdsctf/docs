@@ -10,10 +10,10 @@ hero:
   actions:
     - theme: brand
       text: 什么是 CdsCTF?
-      link: /zh/guide/start/introduction/
+      link: /zh/start/introduction/
     - theme: alt
       text: 快速开始
-      link: /zh/guide/start/quick-start/
+      link: /zh/start/quick-start/
     - theme: alt
       text: GitHub
       link: https://github.com/elabosak233/cdsctf

@@ -5,22 +5,23 @@ export default defineConfig({
 	description: "CdsCTF 是一个开源、高性能的解题模式 CTF 平台",
 	themeConfig: {
 		nav: [
-			{ text: "指南", link: "/zh/guide/start/introduction" },
+			{ text: "开始", link: "/zh/start/introduction" },
+			{ text: "功能", link: "/zh/feature/concept" },
 			{ text: "贡献", link: "/zh/contribution" },
 		],
 
 		sidebar: {
-			"/zh/guide": [
+			"/zh/start": [
 				{
 					text: "开始",
 					items: [
 						{
 							text: "简介",
-							link: "/zh/guide/start/introduction",
+							link: "/zh/start/introduction",
 						},
 						{
 							text: "快速开始",
-							link: "/zh/guide/start/quick-start",
+							link: "/zh/start/quick-start",
 						},
 					],
 				},
@@ -29,11 +30,11 @@ export default defineConfig({
 					items: [
 						{
 							text: "Docker + K3s",
-							link: "/zh/guide/deployment/docker-k3s",
+							link: "/zh/start/deployment/docker-k3s",
 						},
 						{
 							text: "仅 K3s",
-							link: "/zh/guide/deployment/k3s-only",
+							link: "/zh/start/deployment/k3s-only",
 						},
 					],
 				},
@@ -42,22 +43,13 @@ export default defineConfig({
 					items: [
 						{
 							text: "application.toml",
-							link: "/zh/guide/config/application.toml",
+							link: "/zh/start/config/application.toml",
 						},
 					],
 				},
 				{
-					text: "功能",
-					items: [
-						{
-							text: "基础",
-							link: "/zh/guide/feature/basic",
-						},
-						{
-							text: "遥测",
-							link: "/zh/guide/feature/telemetry",
-						},
-					],
+					text: "遥测",
+					link: "/zh/start/telemetry",
 				},
 				{
 					text: "Q&A",
@@ -67,15 +59,20 @@ export default defineConfig({
 							items: [
 								{
 									text: "证书重置",
-									link: "/zh/guide/qa/k3s/cert-reset",
+									link: "/zh/start/qa/k3s/cert-reset",
 								},
 								{
 									text: "Traefik 调整",
-									link: "/zh/guide/qa/k3s/traefik-adjust",
+									link: "/zh/start/qa/k3s/traefik-adjust",
 								},
 							],
 						},
 					],
+				},
+			],
+			"/zh/feature": [
+				{
+					text: "题目",
 				},
 			],
 			"/zh/contribution": [
