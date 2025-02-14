@@ -2,6 +2,8 @@
 
 ## 开发环境
 
+在保证你可以按照文章 *开始/部署* 的指引正确部署 CdsCTF 时，可以按照以下指引建立 CdsCTF 的开发环境。
+
 ### Rust
 
 请参照 [Rust 官方文档](https://www.rust-lang.org/zh-CN/learn/get-started) 安装最新版本的 Rust。
@@ -10,29 +12,7 @@
 
 请参照 [Node.js 官方文档](https://nodejs.org/zh-cn/download/) 安装最新版本的 Node.js。
 
-### Docker
-
-请参照 [Docker 官方文档](https://docs.docker.com/get-docker/) 安装最新版本的 Docker 和 Docker Compose。
-
-## 目录结构
-
-> 此处只展示有必要说明的目录结构
-
-```
-├── docs  # 文档
-│   └── ...
-├── deploys
-│   ├── docker-compose.yml  # 生产环境
-│   └── docker-compose.dev.yml  # 开发环境
-├── src  # 后端
-│   └── ...
-├── web  # 前端
-│   └── ...
-├── Cargo.toml  # Rust 项目配置文件
-└── Dockerfile  # Docker 镜像构建文件
-```
-
-## 编译运行
+## 后端
 
 先克隆仓库，或者可以先复刻再克隆
 
@@ -48,8 +28,58 @@ cd cdsctf
 
 使用 Docker Compose 运行开发时的依赖服务（数据库、消息队列、缓存）
 
-```bash
-docker compose -f deploys/compose.dev.yml up
+```yaml
+version: "3.0"
+services:
+    db:
+        image: postgres:alpine
+        restart: always
+        environment:
+            POSTGRES_USER: cdsctf
+            POSTGRES_PASSWORD: cdsctf
+            POSTGRES_DB: cdsctf
+        volumes:
+            - "db:/var/lib/postgresql/data"
+        ports:
+            - "5432:5432"
+        networks:
+            cdsnet:
+
+    queue:
+        image: nats:alpine
+        restart: always
+        command:
+            - "--js"
+            - "--sd=/data"
+        volumes:
+            - "queue:/data"
+        ports:
+            - "4222:4222"
+        networks:
+            cdsnet:
+
+    cache:
+        image: valkey/valkey:alpine
+        restart: always
+        volumes:
+            - "cache:/data"
+        ports:
+            - "6379:6379"
+        networks:
+            cdsnet:
+
+volumes:
+    db:
+    queue:
+    cache:
+
+networks:
+    cdsnet:
+        driver: bridge
+        ipam:
+            driver: default
+            config:
+                - subnet: "172.20.0.0/24"
 ```
 
 ### 使用 Cargo 编译/运行后端
@@ -64,22 +94,22 @@ cargo build
 cargo run --bin cdsctf
 ```
 
-::: tip 使用 Windows 进行开发时，遇到无法编译 `aws-lc-sys` 的问题
+> [!TIP]
+>
+> 使用 Windows 进行开发时，遇到无法编译 `aws-lc-sys` 的问题
+>
+> 1. 安装 [CMake](https://cmake.org/download/)
+> 2. 安装 [NASM](https://www.nasm.us/)
+> 3. 安装 [Clang](https://clang.llvm.org/)
+> 
+> 并且需要保证 `CMake`、`NASM`、`Clang` 的路径在 `PATH` 环境变量中。
 
-1. 安装 [CMake](https://cmake.org/download/)
-2. 安装 [NASM](https://www.nasm.us/)
-3. 安装 [Clang](https://clang.llvm.org/)
+## 前端
 
-并且需要保证 `CMake`、`NASM`、`Clang` 的路径在 `PATH` 环境变量中
-
-:::
-
-### 使用 NPM 编译/运行前端
-
-先进入前端目录
+先克隆前端项目
 
 ```bash
-cd web
+git clone https://github.com/cdsctf/cdsant.git
 ```
 
 安装依赖

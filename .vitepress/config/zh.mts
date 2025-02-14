@@ -72,7 +72,13 @@ export default defineConfig({
 			],
 			"/zh/feature": [
 				{
-					text: "题目",
+					text: "开始",
+					items: [
+						{
+							text: "设计理念",
+							link: "/zh/feature/concept",
+						},
+					],
 				},
 			],
 			"/zh/contribution": [
