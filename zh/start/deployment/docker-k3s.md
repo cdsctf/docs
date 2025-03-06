@@ -25,10 +25,9 @@ services:
             cdsnet:
 
     frontend:
-        image: elabosak233/cdsant:main
-        restart: always
+        image: elabosak233/cdsuno:main
         volumes:
-            - "frontend:/app"
+            - "frontend:/var/www/html"
         networks:
             cdsnet:
 
