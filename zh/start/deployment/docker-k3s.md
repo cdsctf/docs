@@ -35,7 +35,7 @@ services:
         image: elabosak233/cdsctf:main
         restart: always
         volumes:
-            - "backend:/app"
+            - "backend:/app/data"
             - "./application.toml:/app/application.toml:ro"
             - "./k8s-config.yml:/app/k8s-config.yml"
         depends_on:
