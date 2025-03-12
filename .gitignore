@@ -1,6 +1,7 @@
 yarn.lock
 node_modules
 package-lock.json
+pnpm-lock.yaml
 
 /.vitepress/cache
 /.vitepress/dist

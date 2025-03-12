@@ -81,7 +81,7 @@ CdsCTF 需要依赖多个中间件，以提供稳定的服务。那这意味着�
 
 为什么这里又出现了一次 Kubernetes？因为 CdsCTF 不仅仅需要让 Docker 或 Kubernetes 运行 CdsCTF 本身，还需要调用到 Kubernetes 的控制平面，以实现对题目动态环境的控制。所以 Kubernetes 也是 CdsCTF 的中间件之一。
 
-我们需要为 CdsCTF 配置数据库的连接凭据，也需要配置缓存的 URL（这些配置详见后续对 CdsCTF 后端配置文件 `application.toml` 的描述），而像其他中间件一样，也需要提供连接到 Kubernetes 控制平面的配置。
+我们需要为 CdsCTF 配置数据库的连接凭据，也需要配置缓存的 URL（这些配置详见后续对 CdsCTF 后端配置文件 `constant.toml` 的描述），而像其他中间件一样，也需要提供连接到 Kubernetes 控制平面的配置。
 
 这里先给出获得此配置文件的命令，后续两种部署方法都能用得上：
 
@@ -89,4 +89,4 @@ CdsCTF 需要依赖多个中间件，以提供稳定的服务。那这意味着�
 cat /etc/rancher/k3s/k3s.yaml
 ```
 
-你可以将获得到的文本保存为 `k8s-config.yml`。
+你可以将获得到的文本保存为 `k8s.yml`。

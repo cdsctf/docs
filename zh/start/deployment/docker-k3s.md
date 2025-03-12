@@ -36,8 +36,7 @@ services:
         restart: always
         volumes:
             - "backend:/app/data"
-            - "./application.toml:/app/application.toml:ro"
-            - "./k8s-config.yml:/app/k8s-config.yml"
+            - "./configs:/app/data/configs"
         depends_on:
             - db
             - queue
@@ -97,7 +96,7 @@ networks:
 
 这里我们定义了一个 Docker 网络 `cdsnet`，并且 IP 段在 `172.20.0.0/24` 内，即所有在此 Compose 文件中提到的容器，其网络地址都会处于这段区间内。但有一个比较特殊，即 backend，我们指定了其 IP 地址为 `172.20.0.10`。当然，这些配置你都可以随意更改。后续会解释为什么建议预先设定好网络。
 
-在创建好 `compose.yml` 之后，我们需要准备三个文件，`application.toml`、 `k8s-config.yml` 和 `nginx.conf`，将其放在 `compose.yml` 的同目录。如果你研究过上文的 `compose.yml`，不难发现两个文件将被提供给 backend，即 CdsCTF 的真正后端，剩余一个文件将提供给 nginx。
+在创建好 `compose.yml` 之后，我们需要准备一个 `nginx.conf`，提供给 Nginx。
 
 如果你不知道什么是 Nginx，可以先去了解一下。如果你喜欢 Caddy，也可以自行更换。如果你不想使用 Docker Compose 的 Nginx，而是使用宿主机的 Nginx，也可以自行去除。这里给出一个推荐的基础版 `nginx.conf`（若有意愿使用 SSL，请自行研究）：
 
@@ -145,13 +144,15 @@ http {
 }
 ```
 
-这里将不过多赘述 `application.toml` 的具体写法，`k8s-config.yml` 也是你在 *快速开始* 中通过命令获得的。
+然后我们需要在同一个目录下创建 `/configs` 目录，这个目录将提供给 CdsCTF 的后端，用于生成配置和修改配置。
 
-但我们需要对 `application.toml` 中的一些地址定义做些可能的改变。
+你可以直接通过 `docker compose up` 使得 CdsCTF 自动创建两个配置文件（`constant.toml` 和 `variable.toml`）。以及你还需要向目录中添加一个 `k8s.yml`，就像 *快速开始* 中说的那样。
+
+我们需要对 `constant.toml` 中的一些地址定义做些可能的改变。
 
 比如 `db.host`，需要写成 db，而非具体的 IP 地址。因为在 Docker Compose 中，服务可以直接使用服务名称（在这个案例中为 db）作为主机名来访问彼此。那么一次类推，针对缓存、消息队列的配置也是如此。
 
-我们还需要对 `k8s-config.yml` 做出一些小小的改变，你最开始获得的 `k8s-config.yml` 长这样：
+我们还需要对 `k8s.yml` 做出一些小小的改变，你最开始获得的 `k8s.yml` 长这样：
 
 ```yaml
 apiVersion: v1
