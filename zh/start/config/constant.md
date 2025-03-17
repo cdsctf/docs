@@ -27,7 +27,6 @@ url = "redis://cache:6379"
 
 [cluster]
 namespace = "cdsctf"
-kube_config_path = "./k8s-config.yml"
 traffic = "expose"
 
 [cluster.public_entries]
