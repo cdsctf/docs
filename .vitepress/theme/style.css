@@ -4,6 +4,15 @@
  */
 
 /**
+ * Fonts
+ */
+
+:root {
+	--vp-font-family-base: "Ubuntu Sans Variable", sans-serif;
+	--vp-font-family-mono: "Ubuntu Sans Mono Variable", monospace;
+}
+
+/**
  * Colors
  *
  * Each colors have exact same color scale system with 3 levels of solid
