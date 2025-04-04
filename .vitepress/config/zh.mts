@@ -48,8 +48,17 @@ export default defineConfig({
 					],
 				},
 				{
-					text: "遥测",
-					link: "/zh/start/telemetry",
+					text: "衍生",
+					items: [
+						{
+							text: "遥测",
+							link: "/zh/start/derivative/telemetry",
+						},
+						{
+							text: "反向代理",
+							link: "/zh/start/derivative/reverse-proxy",
+						},
+					],
 				},
 				{
 					text: "Q&A",
@@ -90,6 +99,10 @@ export default defineConfig({
 							link: "/zh/contribution/",
 						},
 					],
+				},
+				{
+					text: "致谢",
+					link: "/zh/contribution/thanks/",
 				},
 			],
 		},

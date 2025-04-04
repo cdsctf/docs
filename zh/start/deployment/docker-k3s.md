@@ -9,30 +9,10 @@
 ```yaml
 version: "3.0"
 services:
-    nginx:
-        image: nginx:alpine
-        restart: always
-        ports:
-            - "80:80"
-            - "443:443"
-        volumes:
-            - "frontend:/var/www/html/:ro"
-            - "./nginx.conf:/etc/nginx/nginx.conf"
-        depends_on:
-            - frontend
-            - backend
-        networks:
-            cdsnet:
-
-    frontend:
-        image: elabosak233/cdsuno:main
-        volumes:
-            - "frontend:/var/www/html"
-        networks:
-            cdsnet:
-
     backend:
         image: elabosak233/cdsctf:main
+        ports:
+            - "127.0.0.1:8888:8888"
         restart: always
         volumes:
             - "backend:/app/data"
@@ -75,9 +55,19 @@ services:
             - "cache:/data"
         networks:
             cdsnet:
+    
+    telemetry:
+        image: otel/opentelemetry-collector:latest
+        ports:
+            - "127.0.0.1:2345:2345"
+        volumes:
+            - "./otel-config.yml:/otel-config.yml:ro"
+        command: ["--config", "/otel-config.yml"]
+        restart: unless-stopped
+        networks:
+            cdsnet:
 
 volumes:
-    frontend:
     backend:
     db:
     queue:
@@ -99,50 +89,6 @@ networks:
 在创建好 `compose.yml` 之后，我们需要准备一个 `nginx.conf`，提供给 Nginx。
 
 如果你不知道什么是 Nginx，可以先去了解一下。如果你喜欢 Caddy，也可以自行更换。如果你不想使用 Docker Compose 的 Nginx，而是使用宿主机的 Nginx，也可以自行去除。这里给出一个推荐的基础版 `nginx.conf`（若有意愿使用 SSL，请自行研究）：
-
-```nginx
-events {}
-
-http {
-    include       /etc/nginx/mime.types;
-    default_type  application/octet-stream;
-
-    upstream backend {
-        server backend:8888;
-    }
-
-    server {
-        listen 80;
-        listen [::]:80;
-        
-        root /var/www/html;
-        gzip on;
-        gzip_static on;
-        gzip_comp_level 6;
-        gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
-        gzip_proxied any;
-        gzip_vary on;
-
-        location / {
-            try_files $uri $uri/ /index.html;
-        }
-        
-        location ~ ^/(api) {
-            client_max_body_size 1024M;
-            proxy_pass http://backend;
-            proxy_set_header Host $host;
-            proxy_http_version 1.1;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection "Upgrade";
-            proxy_redirect off;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Host $server_name;
-            proxy_set_header X-Forwarded-Proto $scheme;
-        }
-    }
-}
-```
 
 然后我们需要在同一个目录下创建 `/configs` 目录，这个目录将提供给 CdsCTF 的后端，用于生成配置和修改配置。
 

@@ -56,7 +56,7 @@ curl –sfL \
 
 接下来我们要区别一个误区，就是 Docker 和 Kubernetes 的关系。虽然 Docker 几乎可以是虚拟化容器的代名词，但并不意味着 Kubernetes 对 Docker 就是依赖关系。换句话说，虽然 Docker 确实可以通过镜像运行容器（即 Docker 是一个容器运行时），但是现在的 Kubernetes 的默认容器运行时却不是 Docker（而是 containerd）。
 
-但是这并不意味着我们一定要将 K3s 的容器运行时从 containered 改成 Docker，因为这其中有许多微妙的问题，可能会给你造成困扰。所以如果你是 **以测试为目的** 部署 CdsCTF，可以试试看更改容器运行时为 Docker。
+但是这并不意味着我们一定要将 K3s 的容器运行时从 containerd 改成 Docker，因为这其中有许多微妙的问题，可能会给你造成困扰。所以如果你是 **以测试为目的** 部署 CdsCTF，可以试试看更改容器运行时为 Docker。
 
 你只需要在运行上面的安装命令之前，在终端使用命令：
 
@@ -73,11 +73,12 @@ INSTALL_K3S_EXEC="--docker"
 CdsCTF 需要依赖多个中间件，以提供稳定的服务。那这意味着需要为宿主机配置这些中间件吗？并非如此，我们可以使用 Docker Compose 或者 K3s 通过镜像创建这些中间件，并且妥当处理中间件与 CdsCTF 之间的关系。
 
 中间件|功能
-:-:|:-:
-[PostgreSQL](https://www.postgresql.org)|数据库
+:--|:--
+[PostgreSQL](https://www.postgresql.org/)|数据持久化
 [NATS](https://nats.io/)|消息队列
 [Valkey](https://valkey.io/)|缓存
 [Kubernetes](https://kubernetes.io/)|虚拟化与容器编排
+[OpenTelemetry Collector](https://opentelemetry.io/docs/collector/)|遥测
 
 为什么这里又出现了一次 Kubernetes？因为 CdsCTF 不仅仅需要让 Docker 或 Kubernetes 运行 CdsCTF 本身，还需要调用到 Kubernetes 的控制平面，以实现对题目动态环境的控制。所以 Kubernetes 也是 CdsCTF 的中间件之一。
 

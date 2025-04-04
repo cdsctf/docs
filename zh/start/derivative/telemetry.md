@@ -1,30 +1,26 @@
 # 遥测
 
-CdsCTF 中使用 OpenTelemetry SDK 并通过 OTLP 与 OpenTelemetry Collector 连接，并向其发送 Metric、Trace 和 Log。随后再由 Collector 将数据分发给相应的后端（如 Prometheus、Jaeger 和 Loki）。
+CdsCTF 中使用 OpenTelemetry SDK 并通过 OTLP 与 OpenTelemetry Collector 连接，并向其发送 Metric、Trace 和 Log。随后再由 Collector 将数据分发给相应的后端（如 Prometheus、Jaeger 和 Loki）。默认的配置中只提供了 OpenTelemetry Collector，但是并没有让 Collector 与其他后端服务结合。
 
 > [!TIP]
 >
-> 请问什么时候需要使用遥测，使用遥测的好处是什么？
+> 请问为什么 CdsCTF 需要强制使用遥测，使用遥测的好处是什么？
 >
-> 任何时候都可以使用遥测。虽然在示例配置文件中，遥测是关闭的，但是 CdsCTF 推荐使用遥测来监控应用状态，并配合 Loki 等实现日志持久化，配合 Jaeger 等实现分布式追踪。
+> 首先，任何时候都可以使用遥测。但对于 CTF 平台而言，非常推荐使用遥测来监控应用状态，并配合 Loki 等实现更好的日志持久化，配合 Jaeger 等实现分布式追踪。
 
-本文将教你如何配置一个相对完整的 CdsCTF 遥测系统。
+本文将教你如何配置一个更完整的 CdsCTF 遥测系统。
 
 CdsCTF 推荐使用的数据可视化服务为 [Grafana](https://grafana.com/)，不用担心，仍然可以通过 Docker 自由部署。但是如果运行 CdsCTF 的服务器性能受限，那就并不推荐在同一台宿主机上部署 Grafana。另外，这里只教部署，Grafana 的具体使用可以通过互联网了解。
 
-根据上文和 CdsCTF 的 `application.toml` 配置文件可知，`telemetry.endpoint_url` 字段填写的是 OpenTelemetry Collector 的地址。所以我们还需要一个 OpenTelemetry Collector。
-
-然后，处理三种数据的后端也是不一样的。在本篇文章中我们使用 Prometheus 处理 Metric，使用 Jaeger 处理 Trace，使用 Loki 处理 Log。
+OpenTelemetry Collector 处理三种数据的后端也是不一样的。在本篇文章中我们使用 Prometheus 处理 Metric，使用 Jaeger 处理 Trace，使用 Loki 处理 Log。
 
 所以，想要完整的遥测，需要 5 个服务。
 
 接下来会有两个 `compose.yml`，规划以上提到的 5 个服务。
 
-这里的服务是 Loki、Jaeger 和 OpenTelemetry Collector。需要被部署在 CdsCTF 后端能够访问到的服务器上。
+这里的服务是 Loki、Jaeger。需要被部署在 OpenTelemetry Collector 能够访问到的服务器上。
 
 ```yaml
-version: "3.8"
-
 services:
   loki:  # Logs collection
     image: grafana/loki:latest
@@ -38,24 +34,11 @@ services:
       # - "6831:6831/udp" # UDP port for Jaeger agent
       - "16686:16686" # Web UI
     restart: unless-stopped
-
-  otel-collector:  # Observability data pipeline
-    image: otel/opentelemetry-collector:latest
-    ports:
-      - "4317:4317"  # Grpc receive port
-      - "4318:4318"  # Http receive port
-      - "2345:2345"  # Metrics preview
-    volumes:
-      - ./otel-config.yml:/otel-config.yml:ro
-    command: ["--config", "/otel-config.yml"]
-    restart: unless-stopped
 ```
 
-这里的服务是 Grafana 和 Prometheus。只要部署在能访问到上面三者的环境中即可。
+这里的服务是 Grafana 和 Prometheus。只要部署在能访问到上面三者（Loki、Jaeger、OpenTelemetry Collector）的环境中即可。
 
 ```yaml
-version: "3.8"
-
 services:
   grafana:  # Data visualization
     image: grafana/grafana:latest
