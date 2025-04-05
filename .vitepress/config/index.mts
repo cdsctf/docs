@@ -1,4 +1,5 @@
 import { defineConfig } from "vitepress";
+import { MermaidMarkdown, MermaidPlugin } from "vitepress-plugin-mermaid";
 import en from "./en.mts";
 import zh from "./zh.mts";
 
@@ -26,5 +27,19 @@ export default defineConfig({
 	locales: {
 		root: { label: "English", ...en },
 		zh: { label: "简体中文", ...zh },
+	},
+	markdown: {
+		config: (md) => {
+			md.use(MermaidMarkdown);
+		},
+	},
+	vite: {
+		plugins: [MermaidPlugin()],
+		optimizeDeps: {
+			include: ["mermaid"],
+		},
+		ssr: {
+			noExternal: ["mermaid"],
+		},
 	},
 });

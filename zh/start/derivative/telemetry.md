@@ -20,6 +20,24 @@ OpenTelemetry Collector 处理三种数据的后端也是不一样的。在本�
 
 这里的服务是 Loki、Jaeger。需要被部署在 OpenTelemetry Collector 能够访问到的服务器上。
 
+```mermaid
+sequenceDiagram
+    participant Prometheus
+    participant OTel as OpenTelemetry
+    participant Loki
+    participant Jaeger
+
+    Prometheus->>OTel: 请求指标数据
+    activate Prometheus
+    OTel-->>Prometheus: 返回指标数据
+    deactivate Prometheus
+
+    OTel->>Loki: 主动发送日志
+    activate OTel
+    OTel->>Jaeger: 主动发送追踪数据
+    deactivate OTel
+```
+
 ```yaml
 services:
   loki:  # Logs collection
