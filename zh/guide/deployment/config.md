@@ -1,11 +1,21 @@
-# `constant.toml`
+# 配置文件
 
-`constant.toml` 是运行 CdsCTF 必需的文件。这里将详解每一个字段。
+`config.toml` 是运行 CdsCTF 核心服务的必需文件，它会向 CdsCTF 提供各大中间件的环境配置。这里将详解每一个字段。
 
-> [!IMPORTANT]
-> 请注意，在修改了 `constant.toml` 之后，一定需要重启 CdsCTF 实例，配置才能生效。
+> [!IMPORTANT] 请注意，在修改了 config.toml 之后，一定需要重启 CdsCTF 实例，配置才能生效。
 
 ```toml
+[server]
+host = "0.0.0.0"
+port = 8888
+frontend = "./dist"
+
+[media]
+path = "./data/media"
+
+[logger]
+level = "info,sqlx=debug,sea_orm=debug,cds_web=debug"
+
 [db]
 host = "db"
 port = 5432
@@ -26,17 +36,13 @@ tls = false
 url = "redis://cache:6379"
 
 [cluster]
-namespace = "cdsctf"
-traffic = "expose"
+namespace = "cdsctf-challenges"
+auto_infer = true
+config_path = "~/.kube/config"
+traffic = "proxy"
 
 [cluster.public_entries]
-"docker" = "127.0.0.1"
-
-[media]
-path = "./data/media"
-
-[logger]
-level = "info,sqlx=debug,sea_orm=debug,cds_web=debug"
+"ubuntu" = "127.0.0.1"
 
 [telemetry]
 is_enabled = false
@@ -45,11 +51,7 @@ endpoint_url = "http://telemetry:4317"
 
 [jwt]
 secret = "A_R4ND0M_4TR1NG"
-expiration = 1800
-
-[server]
-host = "0.0.0.0"
-port = 8888
+expiration = 43200
 ```
 
 ## `db`
@@ -70,7 +72,15 @@ Kubernetes 相关配置。
 
 ### `namespace`
 
-字符串。所有与题目动态环境相关的资源全部存在于此命名空间下。
+字符串。所有与 **题目动态环境** 相关的资源全部存在于此命名空间下。换句话说，如果你是仅 K3s 部署的，不要和存放 CdsCTF 的命名空间搞混了！
+
+### `auto_infer`
+
+布尔值。自动推断 Kubernetes 的配置文件，通常用于仅 K3s 部署的方式。
+
+### `config_path`
+
+字符串。指向存放 Kubernetes 配置文件的位置。
 
 ### `traffic`
 

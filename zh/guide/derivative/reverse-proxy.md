@@ -20,7 +20,7 @@ http {
     server {
         listen 80;
         listen [::]:80;
-        
+
         root /var/www/html;
         gzip on;
         gzip_static on;
@@ -28,7 +28,7 @@ http {
         gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
         gzip_proxied any;
         gzip_vary on;
-        
+
         location / {
             client_max_body_size 1024M;
             proxy_pass http://backend;

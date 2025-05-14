@@ -2,6 +2,30 @@
 
 先来解释一下关系，在这种部署方法中，CdsCTF 及其中间件（Kubernetes 除外）都依赖于 Docker 运行，而 K8s 则仅是作为 CdsCTF 的题目动态环境提供者。
 
+我们需要安装的是 DockerCE，这可不是 `apt-get install docker` 这么简单。
+
+> [!TIP] 我发现我能够使用 apt 的 docker.io 安装 Docker，这样是合理的吗？
+>
+> 其实并不合理，软件包 `docker.io` 来自 Ubuntu 官方软件仓库，由 Ubuntu 维护，通常是一个较老的版本，不会及时更新到 Docker 的最新稳定版本（且缺失了一个对于 Docker 而言的重要小工具 Docker Compose）。言而总之，它不是 DockerCE，不完全符合我们的需求。
+
+安装 DockerCE，你可以按照 [官方文档](https://docs.docker.com/engine/install/) 一步步做下去。
+
+但如果你是国内用户，你可以在互联网上查找更多符合当前网络条件的教程。在此处推荐参考 [清华大学开源软件镜像站](https://mirrors.tuna.tsinghua.edu.cn/help/docker-ce/) 中的 DockerCE 安装方法。
+
+如果你能顺利安装完 DockerCE，且是国内用户，那么请你不要忘记配置镜像源。
+
+通常，Docker 针对源的配置文件通常存放于 `/etc/docker/daemon.json`，如果没有，那就创建一个，然后写出类似于下面的配置：
+
+```json
+{
+    "registry-mirrors": ["..."]
+}
+```
+
+至于具体的镜像源链接，请参考互联网上的更多资料。
+
+至此，你的 Docker 安装完毕。
+
 但是这么多个中间件，如果依靠独立的 Docker 命令进行管理会显得冗杂，所以我们需要使用 Docker Compose。
 
 可以先建立一个空目录，然后在里面新建一个文件 `compose.yml`，这里便记录了 CdsCTF 和其中间件的镜像及依赖关系。
@@ -10,13 +34,13 @@
 version: "3.0"
 services:
     backend:
-        image: elabosak233/cdsctf:main
+        image: elabosak233/cdsctf:latest
         ports:
             - "127.0.0.1:8888:8888"
         restart: always
         volumes:
             - "backend:/app/data"
-            - "./configs:/app/data/configs"
+            - "./configs:/etc/cdsctf"
         depends_on:
             - db
             - queue
@@ -55,7 +79,7 @@ services:
             - "cache:/data"
         networks:
             cdsnet:
-    
+
     telemetry:
         image: otel/opentelemetry-collector:latest
         ports:
@@ -90,11 +114,19 @@ networks:
 
 如果你不知道什么是 Nginx，可以先去了解一下。如果你喜欢 Caddy，也可以自行更换。如果你不想使用 Docker Compose 的 Nginx，而是使用宿主机的 Nginx，也可以自行去除。这里给出一个推荐的基础版 `nginx.conf`（若有意愿使用 SSL，请自行研究）：
 
-然后我们需要在同一个目录下创建 `/configs` 目录，这个目录将提供给 CdsCTF 的后端，用于生成配置和修改配置。
+然后我们需要在同一个目录下创建 `/config` 目录，这个目录将提供给 CdsCTF 的后端，用于存放 CdsCTF 的配置文件。
 
-你可以直接通过 `docker compose up` 使得 CdsCTF 自动创建两个配置文件（`constant.toml` 和 `variable.toml`）。以及你还需要向目录中添加一个 `k8s.yml`，就像 *快速开始* 中说的那样。
+然后你需要新建一个 `config.toml` 在 `/config` 目录中，这里面定义了大部分需要的配置。
 
-我们需要对 `constant.toml` 中的一些地址定义做些可能的改变。
+以及你还需要向目录中添加一个 `k8s.yml`，因为在这种方法部署的 CdsCTF 中，CdsCTF 需要连接到 K8s 控制平面的凭据，你可以这样获得：
+
+```bash
+cat /etc/rancher/k3s/k3s.yaml
+```
+
+你可以将获得到的文本保存为 `k8s.yml`。
+
+我们需要对 `config.toml` 中的一些地址定义做些可能的改变。
 
 比如 `db.host`，需要写成 db，而非具体的 IP 地址。因为在 Docker Compose 中，服务可以直接使用服务名称（在这个案例中为 db）作为主机名来访问彼此。那么一次类推，针对缓存、消息队列的配置也是如此。
 
@@ -103,10 +135,10 @@ networks:
 ```yaml
 apiVersion: v1
 clusters:
-  - cluster:
-      certificate-authority-data: ...
-      server: https://127.0.0.1:6443
-    name: default
+    - cluster:
+          certificate-authority-data: ...
+          server: https://127.0.0.1:6443
+      name: default
 # ...
 ```
 
@@ -115,10 +147,10 @@ clusters:
 ```yaml
 apiVersion: v1
 clusters:
-  - cluster:
-      certificate-authority-data: ...
-      server: https://172.20.0.1:6443
-    name: default
+    - cluster:
+          certificate-authority-data: ...
+          server: https://172.20.0.1:6443
+      name: default
 # ...
 ```
 

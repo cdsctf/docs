@@ -2,7 +2,7 @@
 
 ## 开发环境
 
-在保证你可以按照文章 *开始/部署* 的指引正确部署 CdsCTF 时，可以按照以下指引建立 CdsCTF 的开发环境。
+在保证你可以按照文章 _开始/部署_ 的指引正确部署 CdsCTF 时，可以按照以下指引建立 CdsCTF 的开发环境。
 
 ### Rust 工具链
 
@@ -12,12 +12,10 @@
 
 请参照 [Node.js 官方文档](https://nodejs.org/zh-cn/download/) 安装最新版本的 Node.js 及衍生工具（尤其是 pnpm）。
 
-## 后端
-
 先克隆仓库，或者可以先复刻再克隆
 
 ```bash
-git clone https://github.com/elabosak233/cdsctf.git
+git clone https://github.com/cdsctf/cdsctf.git
 ```
 
 使用 Docker Compose 运行开发时的依赖服务（数据库、消息队列、缓存、遥测）
@@ -35,8 +33,6 @@ services:
             - "db:/var/lib/postgresql/data"
         ports:
             - "5432:5432"
-        networks:
-            cdsnet:
 
     queue:
         image: nats:alpine
@@ -48,8 +44,6 @@ services:
             - "queue:/data"
         ports:
             - "4222:4222"
-        networks:
-            cdsnet:
 
     cache:
         image: valkey/valkey:alpine
@@ -58,8 +52,6 @@ services:
             - "cache:/data"
         ports:
             - "6379:6379"
-        networks:
-            cdsnet:
 
     telemetry:
         image: otel/opentelemetry-collector:latest
@@ -71,21 +63,10 @@ services:
             - "./otel-config.yml:/otel-config.yml:ro"
         command: ["--config", "/otel-config.yml"]
         restart: unless-stopped
-        networks:
-            cdsnet:
-
 volumes:
     db:
     queue:
     cache:
-
-networks:
-    cdsnet:
-        driver: bridge
-        ipam:
-            driver: default
-            config:
-                - subnet: "172.20.0.0/24"
 ```
 
 ### 使用 Cargo 编译/运行后端
@@ -107,23 +88,27 @@ cargo run --bin cds-server
 > 1. 安装 [CMake](https://cmake.org/download/)
 > 2. 安装 [NASM](https://www.nasm.us/)
 > 3. 安装 [Clang](https://clang.llvm.org/)
-> 
+>
 > 并且需要保证 `CMake`、`NASM`、`Clang` 的路径都在 `PATH` 环境变量中。
 
-## 前端
-
-先克隆前端项目
+### 使用 Node.js 编译/运行前端
 
 ```bash
-git clone https://github.com/cdsctf/cdsuno.git
+cd web
 ```
 
-安装依赖和运行开发环境
+CdsCTF 推荐使用 PNPM 以代替 NPM 进行开发，先安装依赖：
 
 ```bash
 pnpm install
 ```
 
+然后可以运行：
+
 ```bash
-pnpm run dev
+pnpm dev
 ```
+
+> [!TIP]
+>
+> 你可以在前端目录中创建一个 `.env` 文件，用来覆盖传至前端项目中的环境变量，此功能在需要临时使用其他来源的后端 API 时尤为重要。
