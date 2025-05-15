@@ -325,7 +325,7 @@ metadata:
     name: backend-config
 data:
     config.toml: |
-    # 填充 CdsCTF 配置文件的内容
+        # 填充 CdsCTF 配置文件的内容
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -333,47 +333,7 @@ metadata:
     name: telemetry-config
 data:
     otel-config.yml: |
-        receivers:
-          otlp:
-            protocols:
-              grpc:
-                endpoint: "0.0.0.0:4317"
-              http:
-                endpoint: "0.0.0.0:4318"
-
-        exporters:
-          debug:
-            verbosity: "detailed"
-
-          prometheus:
-            endpoint: "0.0.0.0:2345"  # For Prometheus to collect Collector metrics
-            namespace: "otel"
-
-          otlphttp/loki:
-            endpoint: "http://<your_loki_address>:3100/otlp"
-
-          otlp/jaeger:
-            endpoint: "http://<your_jaeger_address>:4317"
-            tls:
-              insecure: true
-
-        processors:
-          batch:
-
-        service:
-          pipelines:
-            metrics:
-              receivers: [otlp]
-              processors: [batch]
-              exporters: [prometheus]
-            logs:
-              receivers: [otlp]
-              processors: [batch]
-              exporters: [debug]
-            traces:
-              receivers: [otlp]
-              processors: [batch]
-              exporters: [debug]
+        # 填充 OpenTelemetry Collector 配置文件的内容
 ```
 
 接下来的这些配置因人而异，这边演示的是使用 Traefik IngressRoute 的方法，先是 `service.yaml`。
@@ -482,22 +442,6 @@ metadata:
 spec:
     entryPoints:
         - web
-    routes:
-        - match: Host(`ctf.e23.dev`) # 改为自己的域名
-          kind: Rule
-          middlewares:
-              - name: https-redirect-scheme # 这里使用了中间件，可以将 HTTP 跳转到 HTTPS
-          services:
-              - name: backend
-                port: 8888
-
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-    name: backend
-spec:
-    entryPoints:
         - websecure
     routes:
         - match: Host(`ctf.e23.dev`) # 改为自己的域名
@@ -505,8 +449,6 @@ spec:
           services:
               - name: backend
                 port: 8888
-    tls:
-        secretName: cdsctf-cert-prod # 这里是假如我已经设置了一个 cert-manager 的 Certificate，那我就这么写
 ```
 
 然后就是比较基本的 Helm 使用方法了，这里不详细描述。

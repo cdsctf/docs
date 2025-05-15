@@ -20,10 +20,6 @@ export default defineConfig({
                             link: "/zh/guide/start/introduction",
                         },
                         {
-                            text: "特性",
-                            link: "/zh/guide/start/feature",
-                        },
-                        {
                             text: "技术栈",
                             link: "/zh/guide/start/tech-stack",
                         },
