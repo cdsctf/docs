@@ -18,7 +18,7 @@
 
 ```json
 {
-    "registry-mirrors": ["..."]
+  "registry-mirrors": ["..."]
 }
 ```
 
@@ -33,77 +33,77 @@
 ```yaml
 version: "3.0"
 services:
-    backend:
-        image: elabosak233/cdsctf:latest
-        ports:
-            - "127.0.0.1:8888:8888"
-        restart: always
-        volumes:
-            - "backend:/app/data"
-            - "./configs:/etc/cdsctf"
-        depends_on:
-            - db
-            - queue
-            - cache
-        networks:
-            cdsnet:
-                ipv4_address: "172.20.0.10"
+  backend:
+    image: elabosak233/cdsctf:latest
+    ports:
+      - "127.0.0.1:8888:8888"
+    restart: always
+    volumes:
+      - "backend:/app/data"
+      - "./configs:/etc/cdsctf"
+    depends_on:
+      - db
+      - queue
+      - cache
+    networks:
+      cdsnet:
+        ipv4_address: "172.20.0.10"
 
-    db:
-        image: postgres:alpine
-        restart: always
-        environment:
-            POSTGRES_USER: cdsctf
-            POSTGRES_PASSWORD: cdsctf
-            POSTGRES_DB: cdsctf
-        volumes:
-            - "db:/var/lib/postgresql/data"
-        networks:
-            cdsnet:
+  db:
+    image: postgres:alpine
+    restart: always
+    environment:
+      POSTGRES_USER: cdsctf
+      POSTGRES_PASSWORD: cdsctf
+      POSTGRES_DB: cdsctf
+    volumes:
+      - "db:/var/lib/postgresql/data"
+    networks:
+      cdsnet:
 
-    queue:
-        image: nats:alpine
-        restart: always
-        command:
-            - "--js"
-            - "--sd=/data"
-        volumes:
-            - "queue:/data"
-        networks:
-            cdsnet:
+  queue:
+    image: nats:alpine
+    restart: always
+    command:
+      - "--js"
+      - "--sd=/data"
+    volumes:
+      - "queue:/data"
+    networks:
+      cdsnet:
 
-    cache:
-        image: valkey/valkey:alpine
-        restart: always
-        volumes:
-            - "cache:/data"
-        networks:
-            cdsnet:
+  cache:
+    image: valkey/valkey:alpine
+    restart: always
+    volumes:
+      - "cache:/data"
+    networks:
+      cdsnet:
 
-    telemetry:
-        image: otel/opentelemetry-collector:latest
-        ports:
-            - "127.0.0.1:2345:2345"
-        volumes:
-            - "./otel-config.yml:/otel-config.yml:ro"
-        command: ["--config", "/otel-config.yml"]
-        restart: unless-stopped
-        networks:
-            cdsnet:
+  telemetry:
+    image: otel/opentelemetry-collector:latest
+    ports:
+      - "127.0.0.1:2345:2345"
+    volumes:
+      - "./otel-config.yml:/otel-config.yml:ro"
+    command: ["--config", "/otel-config.yml"]
+    restart: unless-stopped
+    networks:
+      cdsnet:
 
 volumes:
-    backend:
-    db:
-    queue:
-    cache:
+  backend:
+  db:
+  queue:
+  cache:
 
 networks:
-    cdsnet:
-        driver: bridge
-        ipam:
-            driver: default
-            config:
-                - subnet: "172.20.0.0/24"
+  cdsnet:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.20.0.0/24"
 ```
 
 如果你在短时间内无法理解这段 Compose，不妨寻求 LLM 的帮助。
@@ -135,10 +135,10 @@ cat /etc/rancher/k3s/k3s.yaml
 ```yaml
 apiVersion: v1
 clusters:
-    - cluster:
-          certificate-authority-data: ...
-          server: https://127.0.0.1:6443
-      name: default
+  - cluster:
+      certificate-authority-data: ...
+      server: https://127.0.0.1:6443
+    name: default
 # ...
 ```
 
@@ -147,10 +147,10 @@ clusters:
 ```yaml
 apiVersion: v1
 clusters:
-    - cluster:
-          certificate-authority-data: ...
-          server: https://172.20.0.1:6443
-      name: default
+  - cluster:
+      certificate-authority-data: ...
+      server: https://172.20.0.1:6443
+    name: default
 # ...
 ```
 

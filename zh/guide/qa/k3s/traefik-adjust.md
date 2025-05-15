@@ -10,16 +10,16 @@ kubectl -n kube-system edit service traefik
 
 ```yaml
 ports:
-    - name: web
-      nodePort: ...
-      port: 8080
-      protocol: TCP
-      targetPort: web
-    - name: websecure
-      nodePort: ...
-      port: 8443
-      protocol: TCP
-      targetPort: websecure
+  - name: web
+    nodePort: ...
+    port: 8080
+    protocol: TCP
+    targetPort: web
+  - name: websecure
+    nodePort: ...
+    port: 8443
+    protocol: TCP
+    targetPort: websecure
 ```
 
 这样一来，宿主机的 80 和 443 端口将由其他进程接管。

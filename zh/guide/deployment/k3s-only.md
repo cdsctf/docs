@@ -30,7 +30,7 @@ version: 1.0.0
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-    name: cdsctf-sa
+  name: cdsctf-sa
 ```
 
 随后我们需要搭配一个 ClusterRoleBinding 来给予 `cdsctf-sa` 权限，这个可以与 Helm 无关，所以可以选择放到外面用。
@@ -39,15 +39,15 @@ metadata:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-    name: cdsctf-crb
+  name: cdsctf-crb
 roleRef:
-    apiGroup: rbac.authorization.k8s.io
-    kind: ClusterRole
-    name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
 subjects:
-    - kind: ServiceAccount
-      name: cdsctf-sa
-      namespace: cdsctf # 记得改命名空间
+  - kind: ServiceAccount
+    name: cdsctf-sa
+    namespace: cdsctf # 记得改命名空间
 ```
 
 再写一个 `deployment.yaml`。
@@ -56,156 +56,156 @@ subjects:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    name: backend
+  name: backend
 spec:
-    replicas: 1
-    selector:
-        matchLabels:
-            app: backend
-    template:
-        metadata:
-            labels:
-                app: backend
-        spec:
-            serviceAccountName: cdsctf-sa # 赋予 ServiceAccount
-            containers:
-                - name: backend
-                  image: elabosak233/cdsctf:latest
-                  ports:
-                      - containerPort: 8888
-                  volumeMounts:
-                      - name: backend-storage
-                        mountPath: /app/data/media
-                      - name: backend-config
-                        mountPath: /etc/cdsctf/config.toml
-                        subPath: config.toml
-            volumes:
-                - name: backend-storage
-                  persistentVolumeClaim:
-                      claimName: backend-pvc
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      serviceAccountName: cdsctf-sa # 赋予 ServiceAccount
+      containers:
+        - name: backend
+          image: elabosak233/cdsctf:latest
+          ports:
+            - containerPort: 8888
+          volumeMounts:
+            - name: backend-storage
+              mountPath: /app/data/media
+            - name: backend-config
+              mountPath: /etc/cdsctf/config.toml
+              subPath: config.toml
+      volumes:
+        - name: backend-storage
+          persistentVolumeClaim:
+            claimName: backend-pvc
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    name: db
+  name: db
 spec:
-    replicas: 1
-    selector:
-        matchLabels:
-            app: db
-    template:
-        metadata:
-            labels:
-                app: db
-        spec:
-            containers:
-                - name: postgres
-                  image: postgres:alpine
-                  env:
-                      - name: POSTGRES_USER
-                        value: cdsctf
-                      - name: POSTGRES_PASSWORD
-                        value: cdsctf
-                      - name: POSTGRES_DB
-                        value: cdsctf
-                  ports:
-                      - containerPort: 5432
-                  volumeMounts:
-                      - name: db-storage
-                        mountPath: /var/lib/postgresql/data
-            volumes:
-                - name: db-storage
-                  persistentVolumeClaim:
-                      claimName: db-pvc
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:alpine
+          env:
+            - name: POSTGRES_USER
+              value: cdsctf
+            - name: POSTGRES_PASSWORD
+              value: cdsctf
+            - name: POSTGRES_DB
+              value: cdsctf
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: db-storage
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: db-storage
+          persistentVolumeClaim:
+            claimName: db-pvc
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    name: queue
+  name: queue
 spec:
-    replicas: 1
-    selector:
-        matchLabels:
-            app: queue
-    template:
-        metadata:
-            labels:
-                app: queue
-        spec:
-            containers:
-                - name: queue
-                  image: nats:alpine
-                  args:
-                      - "--http_port=8222"
-                      - "--js"
-                      - "--sd=/data"
-                  ports:
-                      - containerPort: 4222
-                  volumeMounts:
-                      - name: queue-storage
-                        mountPath: /data
-            volumes:
-                - name: queue-storage
-                  persistentVolumeClaim:
-                      claimName: queue-pvc
+  replicas: 1
+  selector:
+    matchLabels:
+      app: queue
+  template:
+    metadata:
+      labels:
+        app: queue
+    spec:
+      containers:
+        - name: queue
+          image: nats:alpine
+          args:
+            - "--http_port=8222"
+            - "--js"
+            - "--sd=/data"
+          ports:
+            - containerPort: 4222
+          volumeMounts:
+            - name: queue-storage
+              mountPath: /data
+      volumes:
+        - name: queue-storage
+          persistentVolumeClaim:
+            claimName: queue-pvc
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    name: cache
+  name: cache
 spec:
-    replicas: 1
-    selector:
-        matchLabels:
-            app: cache
-    template:
-        metadata:
-            labels:
-                app: cache
-        spec:
-            containers:
-                - name: cache
-                  image: valkey/valkey:alpine
-                  volumeMounts:
-                      - name: cache-storage
-                        mountPath: /data
-            volumes:
-                - name: cache-storage
-                  persistentVolumeClaim:
-                      claimName: cache-pvc
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cache
+  template:
+    metadata:
+      labels:
+        app: cache
+    spec:
+      containers:
+        - name: cache
+          image: valkey/valkey:alpine
+          volumeMounts:
+            - name: cache-storage
+              mountPath: /data
+      volumes:
+        - name: cache-storage
+          persistentVolumeClaim:
+            claimName: cache-pvc
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    name: telemetry
+  name: telemetry
 spec:
-    replicas: 1
-    selector:
-        matchLabels:
-            app: telemetry
-    template:
-        metadata:
-            labels:
-                app: telemetry
-        spec:
-            containers:
-                - name: telemetry
-                  image: otel/opentelemetry-collector:latest
-                  args:
-                      - "--config"
-                      - "/otel-config.yml"
-                  volumeMounts:
-                      - name: otel-config
-                        mountPath: /otel-config.yml
-                        subPath: otel-config.yml
-            volumes:
-                - name: otel-config
-                  configMap:
-                      name: telemetry-config
+  replicas: 1
+  selector:
+    matchLabels:
+      app: telemetry
+  template:
+    metadata:
+      labels:
+        app: telemetry
+    spec:
+      containers:
+        - name: telemetry
+          image: otel/opentelemetry-collector:latest
+          args:
+            - "--config"
+            - "/otel-config.yml"
+          volumeMounts:
+            - name: otel-config
+              mountPath: /otel-config.yml
+              subPath: otel-config.yml
+      volumes:
+        - name: otel-config
+          configMap:
+            name: telemetry-config
 ```
 
 然后是 `pv.yaml`，这一步得看各自的需求，并不是所有人都需要映射到一个具体的目录，所以，请你看着改一改。
@@ -214,53 +214,53 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-    name: backend-pv
+  name: backend-pv
 spec:
-    capacity:
-        storage: 64Gi
-    volumeMode: Filesystem
-    accessModes:
-        - ReadWriteOnce
-    persistentVolumeReclaimPolicy: Retain
-    storageClassName: backend-storage
+  capacity:
+    storage: 64Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: backend-storage
 
-    # 请务必修改
-    local:
-        path: /home/ela/cdsctf/backend/media
-    nodeAffinity:
-        required:
-            nodeSelectorTerms:
-                - matchExpressions:
-                      - key: kubernetes.io/hostname
-                        operator: In
-                        values:
-                            - ubuntu
+  # 请务必修改
+  local:
+    path: /home/ela/cdsctf/backend/media
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - ubuntu
 
 ---
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-    name: db-pv
+  name: db-pv
 spec:
-    capacity:
-        storage: 2Gi
-    volumeMode: Filesystem
-    accessModes:
-        - ReadWriteOnce
-    persistentVolumeReclaimPolicy: Retain
-    storageClassName: db-storage
+  capacity:
+    storage: 2Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: db-storage
 
-    # 请务必修改
-    local:
-        path: /home/ela/cdsctf/db/data
-    nodeAffinity:
-        required:
-            nodeSelectorTerms:
-                - matchExpressions:
-                      - key: kubernetes.io/hostname
-                        operator: In
-                        values:
-                            - ubuntu
+  # 请务必修改
+  local:
+    path: /home/ela/cdsctf/db/data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - ubuntu
 ```
 
 既然有 PV 了，那肯定要有 PVC 啦，这个是 `pvc.yaml`。
@@ -269,51 +269,51 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-    name: backend-pvc
+  name: backend-pvc
 spec:
-    accessModes:
-        - ReadWriteOnce
-    resources:
-        requests:
-            storage: 60Gi
-    storageClassName: backend-storage
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 60Gi
+  storageClassName: backend-storage
 
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-    name: db-pvc
+  name: db-pvc
 spec:
-    accessModes:
-        - ReadWriteOnce
-    resources:
-        requests:
-            storage: 2Gi
-    storageClassName: db-storage
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: db-storage
 
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-    name: queue-pvc
+  name: queue-pvc
 spec:
-    accessModes:
-        - ReadWriteOnce
-    resources:
-        requests:
-            storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
 
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-    name: cache-pvc
+  name: cache-pvc
 spec:
-    accessModes:
-        - ReadWriteOnce
-    resources:
-        requests:
-            storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
 ```
 
 然后是 `configmap.yaml`。
@@ -322,18 +322,18 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-    name: backend-config
+  name: backend-config
 data:
-    config.toml: |
-        # 填充 CdsCTF 配置文件的内容
+  config.toml: |
+    # 填充 CdsCTF 配置文件的内容
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-    name: telemetry-config
+  name: telemetry-config
 data:
-    otel-config.yml: |
-        # 填充 OpenTelemetry Collector 配置文件的内容
+  otel-config.yml: |
+    # 填充 OpenTelemetry Collector 配置文件的内容
 ```
 
 接下来的这些配置因人而异，这边演示的是使用 Traefik IngressRoute 的方法，先是 `service.yaml`。
@@ -342,81 +342,81 @@ data:
 apiVersion: v1
 kind: Service
 metadata:
-    name: backend
-    labels:
-        app: backend
-    annotations:
-        traefik.ingress.kubernetes.io/service.sticky.cookie: "true"
-        traefik.ingress.kubernetes.io/service.sticky.cookie.name: "LB_Session"
-        traefik.ingress.kubernetes.io/service.sticky.cookie.httponly: "true"
+  name: backend
+  labels:
+    app: backend
+  annotations:
+    traefik.ingress.kubernetes.io/service.sticky.cookie: "true"
+    traefik.ingress.kubernetes.io/service.sticky.cookie.name: "LB_Session"
+    traefik.ingress.kubernetes.io/service.sticky.cookie.httponly: "true"
 spec:
-    ports:
-        - port: 8888
-          protocol: TCP
-    selector:
-        app: backend
-    type: ClusterIP
+  ports:
+    - port: 8888
+      protocol: TCP
+  selector:
+    app: backend
+  type: ClusterIP
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-    name: telemetry
-    labels:
-        app: telemetry
+  name: telemetry
+  labels:
+    app: telemetry
 spec:
-    ports:
-        - port: 4317
-          protocol: TCP
-    selector:
-        app: telemetry
-    type: ClusterIP
+  ports:
+    - port: 4317
+      protocol: TCP
+  selector:
+    app: telemetry
+  type: ClusterIP
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-    name: db
-    labels:
-        app: db
+  name: db
+  labels:
+    app: db
 spec:
-    ports:
-        - port: 5432
-          protocol: TCP
-          target: 5432
-    selector:
-        app: db
-    type: ClusterIP
+  ports:
+    - port: 5432
+      protocol: TCP
+      target: 5432
+  selector:
+    app: db
+  type: ClusterIP
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-    name: queue
-    labels:
-        app: queue
+  name: queue
+  labels:
+    app: queue
 spec:
-    ports:
-        - port: 4222
-          protocol: TCP
-    selector:
-        app: queue
-    type: ClusterIP
+  ports:
+    - port: 4222
+      protocol: TCP
+  selector:
+    app: queue
+  type: ClusterIP
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-    name: cache
-    labels:
-        app: cache
+  name: cache
+  labels:
+    app: cache
 spec:
-    ports:
-        - port: 6379
-          protocol: TCP
-    selector:
-        app: cache
-    type: ClusterIP
+  ports:
+    - port: 6379
+      protocol: TCP
+  selector:
+    app: cache
+  type: ClusterIP
 ```
 
 补充一个 `middleware.yaml`
@@ -425,11 +425,11 @@ spec:
 apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
-    name: https-redirect-scheme
+  name: https-redirect-scheme
 spec:
-    redirectScheme:
-        permanent: true
-        scheme: https
+  redirectScheme:
+    permanent: true
+    scheme: https
 ```
 
 接着是是 `ingressroute.yaml`
@@ -438,17 +438,17 @@ spec:
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-    name: redirect-to-https
+  name: redirect-to-https
 spec:
-    entryPoints:
-        - web
-        - websecure
-    routes:
-        - match: Host(`ctf.e23.dev`) # 改为自己的域名
-          kind: Rule
-          services:
-              - name: backend
-                port: 8888
+  entryPoints:
+    - web
+    - websecure
+  routes:
+    - match: Host(`ctf.e23.dev`) # 改为自己的域名
+      kind: Rule
+      services:
+        - name: backend
+          port: 8888
 ```
 
 然后就是比较基本的 Helm 使用方法了，这里不详细描述。
@@ -457,15 +457,15 @@ spec:
 
 ```yaml
 service:
-    spec:
-        externalTrafficPolicy: Local
+  spec:
+    externalTrafficPolicy: Local
 
 deployment:
-    kind: DaemonSet
+  kind: DaemonSet
 
 additionalArguments:
-    - "--entryPoints.web.proxyProtocol.insecure"
-    - "--entryPoints.web.forwardedHeaders.insecure"
-    - "--entryPoints.websecure.proxyProtocol.insecure"
-    - "--entryPoints.websecure.forwardedHeaders.insecure"
+  - "--entryPoints.web.proxyProtocol.insecure"
+  - "--entryPoints.web.forwardedHeaders.insecure"
+  - "--entryPoints.websecure.proxyProtocol.insecure"
+  - "--entryPoints.websecure.forwardedHeaders.insecure"
 ```

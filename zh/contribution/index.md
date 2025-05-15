@@ -22,51 +22,51 @@ git clone https://github.com/cdsctf/cdsctf.git
 
 ```yaml
 services:
-    db:
-        image: postgres:alpine
-        restart: always
-        environment:
-            POSTGRES_USER: cdsctf
-            POSTGRES_PASSWORD: cdsctf
-            POSTGRES_DB: cdsctf
-        volumes:
-            - "db:/var/lib/postgresql/data"
-        ports:
-            - "5432:5432"
+  db:
+    image: postgres:alpine
+    restart: always
+    environment:
+      POSTGRES_USER: cdsctf
+      POSTGRES_PASSWORD: cdsctf
+      POSTGRES_DB: cdsctf
+    volumes:
+      - "db:/var/lib/postgresql/data"
+    ports:
+      - "5432:5432"
 
-    queue:
-        image: nats:alpine
-        restart: always
-        command:
-            - "--js"
-            - "--sd=/data"
-        volumes:
-            - "queue:/data"
-        ports:
-            - "4222:4222"
+  queue:
+    image: nats:alpine
+    restart: always
+    command:
+      - "--js"
+      - "--sd=/data"
+    volumes:
+      - "queue:/data"
+    ports:
+      - "4222:4222"
 
-    cache:
-        image: valkey/valkey:alpine
-        restart: always
-        volumes:
-            - "cache:/data"
-        ports:
-            - "6379:6379"
+  cache:
+    image: valkey/valkey:alpine
+    restart: always
+    volumes:
+      - "cache:/data"
+    ports:
+      - "6379:6379"
 
-    telemetry:
-        image: otel/opentelemetry-collector:latest
-        ports:
-            - "4317:4317"
-            - "4318:4318"
-            - "2345:2345"
-        volumes:
-            - "./otel-config.yml:/otel-config.yml:ro"
-        command: ["--config", "/otel-config.yml"]
-        restart: unless-stopped
+  telemetry:
+    image: otel/opentelemetry-collector:latest
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+      - "2345:2345"
+    volumes:
+      - "./otel-config.yml:/otel-config.yml:ro"
+    command: ["--config", "/otel-config.yml"]
+    restart: unless-stopped
 volumes:
-    db:
-    queue:
-    cache:
+  db:
+  queue:
+  cache:
 ```
 
 ### 使用 Cargo 编译/运行后端

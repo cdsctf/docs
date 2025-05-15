@@ -1,18 +1,18 @@
 {
-    "scripts": {
-        "dev": "vitepress dev",
-        "build": "vitepress build",
-        "preview": "vitepress preview",
-        "format": "prettier --write ."
-    },
-    "devDependencies": {
-        "mermaid": "^11.6.0",
-        "prettier": "^3.5.3",
-        "vitepress": "^1.6.3",
-        "vitepress-plugin-mermaid": "^2.0.17"
-    },
-    "dependencies": {
-        "@fontsource-variable/ubuntu-sans": "^5.2.7",
-        "@fontsource-variable/ubuntu-sans-mono": "^5.2.7"
-    }
+  "scripts": {
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "mermaid": "^11.6.0",
+    "prettier": "^3.5.3",
+    "vitepress": "^1.6.3",
+    "vitepress-plugin-mermaid": "^2.0.17"
+  },
+  "dependencies": {
+    "@fontsource-variable/ubuntu-sans": "^5.2.7",
+    "@fontsource-variable/ubuntu-sans-mono": "^5.2.7"
+  }
 }

@@ -8,8 +8,8 @@
  */
 
 :root {
-    --vp-font-family-base: "Ubuntu Sans Variable", sans-serif;
-    --vp-font-family-mono: "Ubuntu Sans Mono Variable", monospace;
+  --vp-font-family-base: "Ubuntu Sans Variable", sans-serif;
+  --vp-font-family-mono: "Ubuntu Sans Mono Variable", monospace;
 }
 
 /**
@@ -53,30 +53,30 @@
  * -------------------------------------------------------------------------- */
 
 :root {
-    --vp-c-default-1: var(--vp-c-gray-1);
-    --vp-c-default-2: var(--vp-c-gray-2);
-    --vp-c-default-3: var(--vp-c-gray-3);
-    --vp-c-default-soft: var(--vp-c-gray-soft);
+  --vp-c-default-1: var(--vp-c-gray-1);
+  --vp-c-default-2: var(--vp-c-gray-2);
+  --vp-c-default-3: var(--vp-c-gray-3);
+  --vp-c-default-soft: var(--vp-c-gray-soft);
 
-    --vp-c-brand-1: #3582f5;
-    --vp-c-brand-2: #4a94f6;
-    --vp-c-brand-3: #5ea6f7;
-    --vp-c-brand-soft: rgba(53, 130, 245, 0.2);
+  --vp-c-brand-1: #3582f5;
+  --vp-c-brand-2: #4a94f6;
+  --vp-c-brand-3: #5ea6f7;
+  --vp-c-brand-soft: rgba(53, 130, 245, 0.2);
 
-    --vp-c-tip-1: var(--vp-c-brand-1);
-    --vp-c-tip-2: var(--vp-c-brand-2);
-    --vp-c-tip-3: var(--vp-c-brand-3);
-    --vp-c-tip-soft: var(--vp-c-brand-soft);
+  --vp-c-tip-1: var(--vp-c-brand-1);
+  --vp-c-tip-2: var(--vp-c-brand-2);
+  --vp-c-tip-3: var(--vp-c-brand-3);
+  --vp-c-tip-soft: var(--vp-c-brand-soft);
 
-    --vp-c-warning-1: var(--vp-c-yellow-1);
-    --vp-c-warning-2: var(--vp-c-yellow-2);
-    --vp-c-warning-3: var(--vp-c-yellow-3);
-    --vp-c-warning-soft: var(--vp-c-yellow-soft);
+  --vp-c-warning-1: var(--vp-c-yellow-1);
+  --vp-c-warning-2: var(--vp-c-yellow-2);
+  --vp-c-warning-3: var(--vp-c-yellow-3);
+  --vp-c-warning-soft: var(--vp-c-yellow-soft);
 
-    --vp-c-danger-1: var(--vp-c-red-1);
-    --vp-c-danger-2: var(--vp-c-red-2);
-    --vp-c-danger-3: var(--vp-c-red-3);
-    --vp-c-danger-soft: var(--vp-c-red-soft);
+  --vp-c-danger-1: var(--vp-c-red-1);
+  --vp-c-danger-2: var(--vp-c-red-2);
+  --vp-c-danger-3: var(--vp-c-red-3);
+  --vp-c-danger-soft: var(--vp-c-red-soft);
 }
 
 /**
@@ -84,15 +84,15 @@
    * -------------------------------------------------------------------------- */
 
 :root {
-    --vp-button-brand-border: transparent;
-    --vp-button-brand-text: var(--vp-c-white);
-    --vp-button-brand-bg: var(--vp-c-brand-1);
-    --vp-button-brand-hover-border: transparent;
-    --vp-button-brand-hover-text: var(--vp-c-white);
-    --vp-button-brand-hover-bg: var(--vp-c-brand-2);
-    --vp-button-brand-active-border: transparent;
-    --vp-button-brand-active-text: var(--vp-c-white);
-    --vp-button-brand-active-bg: var(--vp-c-brand-3);
+  --vp-button-brand-border: transparent;
+  --vp-button-brand-text: var(--vp-c-white);
+  --vp-button-brand-bg: var(--vp-c-brand-1);
+  --vp-button-brand-hover-border: transparent;
+  --vp-button-brand-hover-text: var(--vp-c-white);
+  --vp-button-brand-hover-bg: var(--vp-c-brand-2);
+  --vp-button-brand-active-border: transparent;
+  --vp-button-brand-active-text: var(--vp-c-white);
+  --vp-button-brand-active-bg: var(--vp-c-brand-3);
 }
 
 /**
@@ -100,31 +100,31 @@
    * -------------------------------------------------------------------------- */
 
 :root {
-    --vp-home-hero-name-color: transparent;
-    --vp-home-hero-name-background: -webkit-linear-gradient(
-        200deg,
-        #509bfd 30%,
-        #236bd6
-    );
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: -webkit-linear-gradient(
+    200deg,
+    #509bfd 30%,
+    #236bd6
+  );
 
-    --vp-home-hero-image-background-image: linear-gradient(
-        45deg,
-        #ffce00 50%,
-        var(--vp-c-brand-1) 50%
-    );
-    --vp-home-hero-image-filter: blur(44px);
+  --vp-home-hero-image-background-image: linear-gradient(
+    45deg,
+    #ffce00 50%,
+    var(--vp-c-brand-1) 50%
+  );
+  --vp-home-hero-image-filter: blur(44px);
 }
 
 @media (min-width: 640px) {
-    :root {
-        --vp-home-hero-image-filter: blur(56px);
-    }
+  :root {
+    --vp-home-hero-image-filter: blur(56px);
+  }
 }
 
 @media (min-width: 960px) {
-    :root {
-        --vp-home-hero-image-filter: blur(68px);
-    }
+  :root {
+    --vp-home-hero-image-filter: blur(68px);
+  }
 }
 
 /**
@@ -132,10 +132,10 @@
    * -------------------------------------------------------------------------- */
 
 :root {
-    --vp-custom-block-tip-border: transparent;
-    --vp-custom-block-tip-text: var(--vp-c-text-1);
-    --vp-custom-block-tip-bg: var(--vp-c-brand-soft);
-    --vp-custom-block-tip-code-bg: var(--vp-c-brand-soft);
+  --vp-custom-block-tip-border: transparent;
+  --vp-custom-block-tip-text: var(--vp-c-text-1);
+  --vp-custom-block-tip-bg: var(--vp-c-brand-soft);
+  --vp-custom-block-tip-code-bg: var(--vp-c-brand-soft);
 }
 
 /**
@@ -143,22 +143,22 @@
    * -------------------------------------------------------------------------- */
 
 .DocSearch {
-    --docsearch-primary-color: var(--vp-c-brand-1) !important;
+  --docsearch-primary-color: var(--vp-c-brand-1) !important;
 }
 
 .VPNavBarTitle {
-    transition-property: opacity;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 350ms;
+  transition-property: opacity;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 350ms;
 }
 
 .VPNavBarTitle:hover {
-    opacity: 0.6;
-    transition-property: opacity;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 350ms;
+  opacity: 0.6;
+  transition-property: opacity;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 350ms;
 }
 
 .vp-doc img {
-    border-radius: 8px;
+  border-radius: 8px;
 }

@@ -21,7 +21,7 @@ sudo cp /var/lib/rancher/k3s/server/tls/server-ca.key /var/lib/rancher/k3s/serve
 
 ```yaml
 tls-san:
-    - 172.20.0.1 # 即宿主机相对于 CdsCTF 后端的位置
+  - 172.20.0.1 # 即宿主机相对于 CdsCTF 后端的位置
 ```
 
 随后删除原有的证书：

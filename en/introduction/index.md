@@ -11,21 +11,21 @@ Just like ACM, CTF should have its own customized platform. CdsCTF is very suita
 ## Features
 
 - Challenges
-    - Static Challenges: No target machine, the grading relies on one or more known flag strings, usually dependent on the attachment system.
-    - Dynamic Challenges: Dynamic target machines, the grading can rely on static flag strings or dynamically generated flags (usually a `UUID`).
+  - Static Challenges: No target machine, the grading relies on one or more known flag strings, usually dependent on the attachment system.
+  - Dynamic Challenges: Dynamic target machines, the grading can rely on static flag strings or dynamically generated flags (usually a `UUID`).
 - Target Machines
-    - Multi-port support
-    - Customizable basic environment variables for custom images
-    - Customizable container resource requests (memory and CPU)
-    - Customizable flag injection variable names
-    - Optional port mapping mode
-    - Traffic capture implemented through platform proxy
+  - Multi-port support
+  - Customizable basic environment variables for custom images
+  - Customizable container resource requests (memory and CPU)
+  - Customizable flag injection variable names
+  - Optional port mapping mode
+  - Traffic capture implemented through platform proxy
 - Competitions
-    - Customizable challenge scores
-    - Customizable first, second, and third blood reward ratios
-    - Ability to disable/enable challenges at any time during the competition, allowing for multiple releases of challenges
-    - Competition message broadcasting based on Websocket
+  - Customizable challenge scores
+  - Customizable first, second, and third blood reward ratios
+  - Ability to disable/enable challenges at any time during the competition, allowing for multiple releases of challenges
+  - Competition message broadcasting based on Websocket
 - Database
-    - Support for multiple relational databases via SeaORM (PostgreSQL, SQLite3, MySQL)
+  - Support for multiple relational databases via SeaORM (PostgreSQL, SQLite3, MySQL)
 - Container Support
-    - Kubernetes
+  - Kubernetes

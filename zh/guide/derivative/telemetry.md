@@ -38,48 +38,48 @@ sequenceDiagram
 
 ```yaml
 services:
-    loki: # Logs collection
-        image: grafana/loki:latest
-        ports:
-            - "3100:3100"
-        restart: unless-stopped
+  loki: # Logs collection
+    image: grafana/loki:latest
+    ports:
+      - "3100:3100"
+    restart: unless-stopped
 
-    jaeger: # Traces collection
-        image: jaegertracing/jaeger:latest
-        ports:
-            # - "6831:6831/udp" # UDP port for Jaeger agent
-            - "16686:16686" # Web UI
-        restart: unless-stopped
+  jaeger: # Traces collection
+    image: jaegertracing/jaeger:latest
+    ports:
+      # - "6831:6831/udp" # UDP port for Jaeger agent
+      - "16686:16686" # Web UI
+    restart: unless-stopped
 ```
 
 这里的服务是 Grafana 和 Prometheus。只要部署在能访问到上面三者（Loki、Jaeger、OpenTelemetry Collector）的环境中即可。
 
 ```yaml
 services:
-    grafana: # Data visualization
-        image: grafana/grafana:latest
-        ports:
-            - "3000:3000" # Grafana default port
-        volumes:
-            - grafana:/var/lib/grafana
-            # - ./grafana.ini:/etc/grafana/grafana.ini
-        environment:
-            - GF_SECURITY_ADMIN_USER=admin
-            - GF_SECURITY_ADMIN_PASSWORD=admin
-        restart: unless-stopped
+  grafana: # Data visualization
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000" # Grafana default port
+    volumes:
+      - grafana:/var/lib/grafana
+      # - ./grafana.ini:/etc/grafana/grafana.ini
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    restart: unless-stopped
 
-    prometheus: # Metrics collection
-        image: prom/prometheus:latest
-        ports:
-            - "9090:9090" # Prometheus default web UI port
-        volumes:
-            - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
-        command:
-            - "--config.file=/etc/prometheus/prometheus.yml"
-        restart: unless-stopped
+  prometheus: # Metrics collection
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090" # Prometheus default web UI port
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    restart: unless-stopped
 
 volumes:
-    grafana:
+  grafana:
 ```
 
 > [!TIP]
@@ -93,58 +93,58 @@ volumes:
 ```yaml
 # prometheus.yml
 global:
-    scrape_interval: 15s
-    evaluation_interval: 15s
+  scrape_interval: 15s
+  evaluation_interval: 15s
 
 scrape_configs:
-    - job_name: "otel-collector"
-      static_configs:
-          - targets: ["otel-collector:2345"]
+  - job_name: "otel-collector"
+    static_configs:
+      - targets: ["otel-collector:2345"]
 ```
 
 ```yaml
 # otel-config.yml
 receivers:
-    otlp:
-        protocols:
-            grpc:
-                endpoint: "0.0.0.0:4317"
-            http:
-                endpoint: "0.0.0.0:4318"
+  otlp:
+    protocols:
+      grpc:
+        endpoint: "0.0.0.0:4317"
+      http:
+        endpoint: "0.0.0.0:4318"
 
 exporters:
-    debug:
-        verbosity: "detailed"
+  debug:
+    verbosity: "detailed"
 
-    prometheus:
-        endpoint: "0.0.0.0:2345" # For Prometheus to collect Collector metrics
-        namespace: "otel"
+  prometheus:
+    endpoint: "0.0.0.0:2345" # For Prometheus to collect Collector metrics
+    namespace: "otel"
 
-    otlphttp/loki:
-        endpoint: "http://loki:3100/otlp"
+  otlphttp/loki:
+    endpoint: "http://loki:3100/otlp"
 
-    otlp/jaeger:
-        endpoint: "http://jaeger:4317"
-        tls:
-            insecure: true
+  otlp/jaeger:
+    endpoint: "http://jaeger:4317"
+    tls:
+      insecure: true
 
 processors:
-    batch:
+  batch:
 
 service:
-    pipelines:
-        metrics:
-            receivers: [otlp]
-            processors: [batch]
-            exporters: [prometheus]
-        logs:
-            receivers: [otlp]
-            processors: [batch]
-            exporters: [debug, otlphttp/loki]
-        traces:
-            receivers: [otlp]
-            processors: [batch]
-            exporters: [otlp/jaeger]
+  pipelines:
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [prometheus]
+    logs:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [debug, otlphttp/loki]
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlp/jaeger]
 ```
 
 将两个文件放到相应的 Compose 目录，两边运行 `docker compose up` 即可。
