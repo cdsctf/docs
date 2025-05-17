@@ -1,6 +1,7 @@
 # 简介
 
 CdsCTF 是一个基于 Rust 的现代化开源 Capture The Flag (CTF) 平台，提供了高度自定义的题库设计、比赛举办等功能。
+最初由 [ElaBosak233 (Ela)](https://github.com/ElaBosak233) 开发，且持续维护。
 
 本项目基于 GPL-3.0 协议开源，使用和修改均需遵守此开源协议。
 
@@ -28,6 +29,14 @@ CdsCTF 是一个基于 Rust 的现代化开源 Capture The Flag (CTF) 平台，�
 - 资源限制：可严格控制每个容器的 CPU、内存和存储资源
 - 网络隔离控制：可选择性地允许或禁止容器访问互联网
 - 生命周期：自动清理过期环境，且支持环境续期
+
+## 致谢
+
+### 贡献者
+
+谢谢每一位给 CdsCTF 作出贡献的小伙伴！没有你的帮助，不会有今天的 CdsCTF。
+
+![Contributors of CdsCTF](https://contrib.rocks/image?repo=cdsctf/cdsctf)
 
 ## Stars
 

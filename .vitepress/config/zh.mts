@@ -7,7 +7,6 @@ export default defineConfig({
     nav: [
       { text: "指南", link: "/zh/guide/start/introduction" },
       { text: "功能", link: "/zh/feature/concept" },
-      { text: "贡献", link: "/zh/contribution/overview/quick-start" },
     ],
 
     sidebar: {
@@ -87,29 +86,6 @@ export default defineConfig({
               link: "/zh/feature/concept",
             },
           ],
-        },
-      ],
-      "/zh/contribution": [
-        {
-          text: "概览",
-          items: [
-            {
-              text: "快速开始",
-              link: "/zh/contribution/overview/quick-start",
-            },
-            {
-              text: "提交",
-              link: "/zh/contribution/overview/commit",
-            },
-            {
-              text: "代码风格",
-              link: "/zh/contribution/overview/style",
-            },
-          ],
-        },
-        {
-          text: "致谢",
-          link: "/zh/contribution/thanks/",
         },
       ],
     },

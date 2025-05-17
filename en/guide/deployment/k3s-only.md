@@ -1,18 +1,18 @@
-# 仅 K3s
+# K3s Only
 
-在这种部署方法中，你只需要 K3s 就行了，但这里并不会教你如何组建 K3s 集群，所以这里只会演示在单机的 K3s 上部署 CdsCTF 和衍生服务。
+In this deployment method, you only need K3s. However, this guide will not teach you how to set up a K3s cluster. Instead, it will demonstrate how to deploy CdsCTF and its related services on a single-node K3s instance.
 
-在开始之前，你可能需要准备一个 [Helm](https://helm.sh/)，等等，不要想多了，CdsCTF 还没有制作出一个可以通用的 Helm Chart，我只是觉得，这样部署起来方便一些。
+Before you begin, you might want to prepare [Helm](https://helm.sh/). Don't get too excited — CdsCTF doesn't yet have a generic Helm Chart. I just find Helm makes deployment a bit easier.
 
-你如果无法正常使用 `helm` 命令，可以先输入一遍这个命令：
+If you can't use the `helm` command properly, try running this command first:
 
 ```bash
 export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 ```
 
-然后新建一个空目录，我们开始了。
+Then, create an empty directory and let's get started.
 
-先新建一个 `Chart.yaml`，写入以下内容，只要让 Helm 觉得这是一个 Chart 就行了，不一定要按照我的来。以及在实践过程中，默认的命名空间认定为 `cdsctf`。
+First, create a `Chart.yaml` file with the following content — just enough for Helm to recognize it as a Chart. You don't need to follow this exactly. The default namespace assumed during deployment will be `cdsctf`.
 
 ```yaml
 apiVersion: v2
@@ -22,9 +22,9 @@ type: application
 version: 1.0.0
 ```
 
-然后新建一个目录 `templates`，接下来大部分文件都会写在这里面。
+Next, create a `templates` directory — most of the files will go here.
 
-先写一个 `serviceaccount.yaml`，这个文件将给 CdsCTF 提供集群的访问账户。
+Create a `serviceaccount.yaml` file to provide CdsCTF with a service account for cluster access:
 
 ```yaml
 apiVersion: v1
@@ -33,7 +33,7 @@ metadata:
   name: cdsctf-sa
 ```
 
-随后我们需要搭配一个 ClusterRoleBinding 来给予 `cdsctf-sa` 权限，这个可以与 Helm 无关，所以可以选择放到外面用。
+Now create a ClusterRoleBinding to grant `cdsctf-sa` permissions. This doesn't have to be managed by Helm, so you can apply it separately:
 
 ```yaml
 apiVersion: rbac.authorization.k8s.io/v1
@@ -47,10 +47,10 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: cdsctf-sa
-    namespace: cdsctf # 记得改命名空间
+    namespace: cdsctf # Don't forget to update the namespace
 ```
 
-再写一个 `deployment.yaml`。
+Now create deployment.yaml:
 
 ```yaml
 apiVersion: apps/v1
@@ -67,7 +67,7 @@ spec:
       labels:
         app: backend
     spec:
-      serviceAccountName: cdsctf-sa # 赋予 ServiceAccount
+      serviceAccountName: cdsctf-sa # Give ServiceAccount
       containers:
         - name: backend
           image: elabosak233/cdsctf:latest
@@ -208,7 +208,7 @@ spec:
             name: telemetry-config
 ```
 
-然后是 `pv.yaml`，这一步得看各自的需求，并不是所有人都需要映射到一个具体的目录，所以，请你看着改一改。
+Next is `pv.yaml`. This depends on your setup, since not everyone needs to map to a specific directory. Modify accordingly:
 
 ```yaml
 apiVersion: v1
@@ -263,7 +263,7 @@ spec:
                 - ubuntu
 ```
 
-既然有 PV 了，那肯定要有 PVC 啦，这个是 `pvc.yaml`。
+Since we have PersistentVolumes, we'll need PersistentVolumeClaims. Here's `pvc.yaml`:
 
 ```yaml
 apiVersion: v1
@@ -316,7 +316,7 @@ spec:
       storage: 1Gi
 ```
 
-然后是 `configmap.yaml`。
+Next is `configmap.yaml`:
 
 ```yaml
 apiVersion: v1
@@ -325,7 +325,7 @@ metadata:
   name: backend-config
 data:
   config.toml: |
-    # 填充 CdsCTF 配置文件的内容
+    # Fill in your CdsCTF config content here
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -333,10 +333,10 @@ metadata:
   name: telemetry-config
 data:
   otel-config.yml: |
-    # 填充 OpenTelemetry Collector 配置文件的内容
+    # Fill in your OpenTelemetry Collector config here
 ```
 
-接下来的这些配置因人而异，这边演示的是使用 Traefik IngressRoute 的方法，先是 `service.yaml`。
+The following configurations vary per setup. This example uses Traefik IngressRoute. First, `service.yaml`:
 
 ```yaml
 apiVersion: v1
@@ -419,7 +419,7 @@ spec:
   type: ClusterIP
 ```
 
-补充一个 `middleware.yaml`
+Then add a `middleware.yaml`:
 
 ```yaml
 apiVersion: traefik.io/v1alpha1
@@ -432,7 +432,7 @@ spec:
     scheme: https
 ```
 
-接着是 `ingressroute.yaml`
+Then `ingressroute.yaml`:
 
 ```yaml
 apiVersion: traefik.io/v1alpha1
@@ -451,9 +451,9 @@ spec:
           port: 8888
 ```
 
-然后就是比较基本的 Helm 使用方法了，这里不详细描述。
+From here on, you can proceed with the basic Helm deployment workflow — not detailed here.
 
-但是还需要补充一点，就是 Traefik 可能没法正确处理 XFF 等请求头，导致 CdsCTF 无法正确解析客户端的真实 IP，这里提供一个方法，帮助你解决这个问题，如果你是 Helm 部署的 Traefik 的话，可以在 `values.yaml` 中这么写。
+One last note: Traefik may not correctly handle X-Forwarded-For (XFF) and similar headers, which can prevent CdsCTF from resolving the real client IP. Here’s how to address that. If you deployed Traefik with Helm, add this to your `values.yaml`:
 
 ```yaml
 service:

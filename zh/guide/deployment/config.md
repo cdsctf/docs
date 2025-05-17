@@ -84,7 +84,10 @@ Kubernetes 相关配置。
 
 ### `traffic`
 
-字符串 `expose` | `proxy`。若选择 `expose`，则下文的 `public_entries` 一定需要配置，所有的题目动态环境都将通过 Kubernetes 的 NodePort Service 暴露端口。若为 `proxy`，则题目动态环境需要通过 [WebsocketReflectorX](https://github.com/XDSEC/WebSocketReflectorX) 访问，并且仅使用 `proxy` 时，允许对流量进行捕获。
+字符串 `expose` | `proxy`。
+
+- 若选择 `expose`，则下文的 `public_entries` 一定需要配置，所有的题目动态环境都将通过 Kubernetes 的 NodePort Service 暴露端口。
+- 若为 `proxy`，则题目动态环境需要通过 [WebsocketReflectorX](https://github.com/XDSEC/WebSocketReflectorX) 访问。
 
 ### `public_entries`
 

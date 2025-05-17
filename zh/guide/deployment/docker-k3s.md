@@ -4,10 +4,6 @@
 
 我们需要安装的是 DockerCE，这可不是 `apt-get install docker` 这么简单。
 
-> [!TIP] 我发现我能够使用 apt 的 docker.io 安装 Docker，这样是合理的吗？
->
-> 其实并不合理，软件包 `docker.io` 来自 Ubuntu 官方软件仓库，由 Ubuntu 维护，通常是一个较老的版本，不会及时更新到 Docker 的最新稳定版本（且缺失了一个对于 Docker 而言的重要小工具 Docker Compose）。言而总之，它不是 DockerCE，不完全符合我们的需求。
-
 安装 DockerCE，你可以按照 [官方文档](https://docs.docker.com/engine/install/) 一步步做下去。
 
 但如果你是国内用户，你可以在互联网上查找更多符合当前网络条件的教程。在此处推荐参考 [清华大学开源软件镜像站](https://mirrors.tuna.tsinghua.edu.cn/help/docker-ce/) 中的 DockerCE 安装方法。
@@ -110,10 +106,6 @@ networks:
 
 这里我们定义了一个 Docker 网络 `cdsnet`，并且 IP 段在 `172.20.0.0/24` 内，即所有在此 Compose 文件中提到的容器，其网络地址都会处于这段区间内。但有一个比较特殊，即 backend，我们指定了其 IP 地址为 `172.20.0.10`。当然，这些配置你都可以随意更改。后续会解释为什么建议预先设定好网络。
 
-在创建好 `compose.yml` 之后，我们需要准备一个 `nginx.conf`，提供给 Nginx。
-
-如果你不知道什么是 Nginx，可以先去了解一下。如果你喜欢 Caddy，也可以自行更换。如果你不想使用 Docker Compose 的 Nginx，而是使用宿主机的 Nginx，也可以自行去除。这里给出一个推荐的基础版 `nginx.conf`（若有意愿使用 SSL，请自行研究）：
-
 然后我们需要在同一个目录下创建 `/config` 目录，这个目录将提供给 CdsCTF 的后端，用于存放 CdsCTF 的配置文件。
 
 然后你需要新建一个 `config.toml` 在 `/config` 目录中，这里面定义了大部分需要的配置。
@@ -158,6 +150,6 @@ clusters:
 
 此时如果你在目录下运行 `docker compose up` 启动这个 Compose，你若发现 backend 的报错是无法连接 Cluster，我们需要为 K3s 重新配置一下证书，具体可参考 Q&A。
 
-如果顺利启动了，你可以通过 `http://127.0.0.1` 进入 CdsCTF，但你会发现 K3s 携带的 Traefik 可能拦截了你的请求，给了你一个 `404 page not found` 的返回，此时我们需要对 Traefik 做一些处理（或者你也可以改变 Nginx 的映射端口到 `80` 和 `443` 以外的端口），参考 Q&A。
+如果顺利启动了，你可以通过 `http://127.0.0.1` 进入 CdsCTF，但你会发现 K3s 携带的 Traefik 可能拦截了你的请求，给了你一个 `404 page not found` 的返回，此时我们需要对 Traefik 做一些处理，参考 Q&A。
 
 此时运行 `docker compose up -d`，即可顺利启动 CdsCTF。

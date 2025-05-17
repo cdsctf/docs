@@ -10,10 +10,10 @@ hero:
   actions:
     - theme: brand
       text: What is CdsCTF?
-      link: /en/guide/
+      link: /guide/start/introduction
     - theme: alt
       text: Quick Start
-      link: /en/quick-start/
+      link: /guide/deployment/quick-start
     - theme: alt
       text: GitHub
       link: https://github.com/cdsctf/cdsctf

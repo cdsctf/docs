@@ -23,6 +23,12 @@ export default defineConfig({
         link: "https://github.com/cdsctf/cdsctf",
       },
     ],
+    search: {
+      provider: "local",
+    },
+    editLink: {
+      pattern: "https://github.com/cdsctf/docs/edit/main/:path",
+    },
   },
   locales: {
     root: { label: "English", ...en },

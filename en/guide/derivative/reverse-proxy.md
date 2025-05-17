@@ -1,10 +1,10 @@
-# 反向代理
+# Reverse Proxy
 
-在未配置默认的反向代理（如 Traefik）的前提下，CdsCTF 也支持且推荐使用 Nginx 或 Caddy 进行反向代理。
+If you haven't configured a default reverse proxy (such as Traefik), CdsCTF also supports and recommends using Nginx or Caddy as reverse proxies.
 
 ## Nginx
 
-这里提供一个最简单的 `nginx.conf`。
+Here is a minimal example of an nginx.conf:
 
 ```nginx
 events {}
@@ -40,7 +40,7 @@ http {
 
 ## Caddy
 
-同样地，也有 `Caddyfile`。
+Similarly, here is a simple Caddyfile:
 
 ```text
 example.com {
