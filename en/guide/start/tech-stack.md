@@ -55,7 +55,8 @@
 ### Status management and Data fetching
 
 - Zustand: A lightweight state management library
-- Alova: Data request Library
+- Ky: A data fetching library based on Fetch
+- TanStack Query: A server-state management and caching library
 
 ### Form processing and Validation
 
