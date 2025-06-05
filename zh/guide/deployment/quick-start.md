@@ -52,7 +52,7 @@ INSTALL_K3S_EXEC="--docker"
 还有一个需要注意的点，就是 K3s 通常会捆绑一个 Traefik 作为集群的 Ingress Controller，如果你不想要，或者说自行部署，可以在命令的后面再加一条：
 
 ```bash
---disable-traefik
+--disable=traefik
 ```
 
 在不采取额外措施安装完 K3s 后，你的宿主机会有一个小变化。就是不论是访问 `http://127.0.0.1` 还是 `https://127.0.0.1`，返回都是 `404 page not found`，因为此时你宿主机的 80 和 443 端口，全都会被 K3s 的 Traefik 接管。如果你后续使用 Docker + K3s 的方式部署或者另有安排，那么我们可能需要对此做出一点调整，可详见文档更多内容。

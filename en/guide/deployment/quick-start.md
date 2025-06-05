@@ -43,7 +43,7 @@ Then proceed with the K3s installation command. From that point forward, your K3
 One more thing to note: K3s usually comes bundled with Traefik as the cluster's Ingress Controller. If you don't want this, or prefer to deploy your own, you can add the following flag to the installation command:
 
 ```bash
---disable-traefik
+--disable=traefik
 ```
 
 Once K3s is installed (without extra configuration), there will be a small but important change to your host system: whether you access `http://127.0.0.1` or `https://127.0.0.1`, you'll get a `404 page not found` response. This is because ports 80 and 443 are taken over by K3s's Traefik. If you later deploy using the Docker + K3s method or have other plans, you may need to adjust this behavior. Refer to the documentation for more details.
