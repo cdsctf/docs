@@ -2,9 +2,9 @@
 
 CdsCTF 中使用 OpenTelemetry SDK 并通过 OTLP 与 OpenTelemetry Collector 连接，并向其发送 Metric、Trace 和 Log。随后再由 Collector 将数据分发给相应的后端（如 Prometheus、Jaeger 和 Loki）。默认的配置中只提供了 OpenTelemetry Collector，但是并没有让 Collector 与其他后端服务结合。
 
-> [!TIP] 为什么 CdsCTF 需要强制使用遥测，使用遥测的好处是什么？
+> [!TIP] 使用遥测的好处是什么？
 >
-> 首先，任何时候都可以使用遥测。但对于 CTF 平台而言，非常推荐使用遥测来监控应用状态，并配合 Loki 等实现更好的日志持久化，配合 Jaeger 等实现分布式追踪。
+> 对于 CTF 平台而言，非常推荐使用遥测来监控应用状态，并配合 Loki 等实现更好的日志持久化，配合 Jaeger 等实现分布式追踪。
 
 本文将教你如何配置一个更完整的 CdsCTF 遥测系统。
 
