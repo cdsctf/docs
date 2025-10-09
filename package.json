@@ -3,16 +3,17 @@
     "dev": "vitepress dev",
     "build": "vitepress build",
     "preview": "vitepress preview",
-    "format": "prettier --write ."
+    "check": "biome check --write ./src",
+    "format": "biome format --write ."
   },
   "devDependencies": {
-    "mermaid": "^11.6.0",
-    "prettier": "^3.5.3",
-    "vitepress": "^1.6.3",
+    "@biomejs/biome": "^2.2.5",
+    "mermaid": "^11.12.0",
+    "vitepress": "^1.6.4",
     "vitepress-plugin-mermaid": "^2.0.17"
   },
   "dependencies": {
-    "@fontsource-variable/ubuntu-sans": "^5.2.7",
-    "@fontsource-variable/ubuntu-sans-mono": "^5.2.7"
+    "@fontsource-variable/ubuntu-sans": "^5.2.10",
+    "@fontsource-variable/ubuntu-sans-mono": "^5.2.10"
   }
 }
