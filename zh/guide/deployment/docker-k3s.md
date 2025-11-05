@@ -29,13 +29,13 @@
 ```yaml
 version: "3.0"
 services:
-  backend:
-    image: elabosak233/cdsctf:latest
+  server:
+    image: docker.io/elabosak233/cdsctf:1.8.1
     ports:
       - "127.0.0.1:8888:8888"
     restart: always
     volumes:
-      - "backend:/app/data"
+      - "server:/app/data"
       - "./configs:/etc/cdsctf"
     depends_on:
       - db
@@ -46,7 +46,7 @@ services:
         ipv4_address: "172.20.0.10"
 
   db:
-    image: postgres:alpine
+    image: docker.io/library/postgres:18-alpine
     restart: always
     environment:
       POSTGRES_USER: cdsctf
@@ -58,7 +58,7 @@ services:
       cdsnet:
 
   queue:
-    image: nats:alpine
+    image: docker.io/library/nats:2-alpine
     restart: always
     command:
       - "--js"
@@ -69,15 +69,15 @@ services:
       cdsnet:
 
   cache:
-    image: valkey/valkey:alpine
+    image: docker.io/valkey/valkey:9-alpine
     restart: always
     volumes:
       - "cache:/data"
     networks:
       cdsnet:
 
-  telemetry:
-    image: otel/opentelemetry-collector:latest
+  otel:
+    image: docker.io/otel/opentelemetry-collector:latest
     ports:
       - "127.0.0.1:2345:2345"
     volumes:
@@ -88,7 +88,7 @@ services:
       cdsnet:
 
 volumes:
-  backend:
+  server:
   db:
   queue:
   cache:

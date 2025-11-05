@@ -3,7 +3,7 @@
 CdsCTF is a modern open-source Capture The Flag (CTF) platform based on Rust, offering highly customizable features such as problem set design and game hosting.
 Originally developed by [ElaBosak233 (Ela)](https://github.com/ElaBosak233) and continuously maintained.
 
-This project is open source under the GPL-3.0 license. Any use or modification must comply with this open source license.
+This project is open source under the AGPL license. Any use or modification must comply with this open source license.
 
 ![Index](/images/index.webp)
 

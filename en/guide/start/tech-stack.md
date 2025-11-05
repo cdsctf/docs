@@ -23,7 +23,6 @@
 ### Security and Authentication
 
 - Argon2: Used for password hashing
-- JWT: Used for user authentication
 - Ring & Rustls: Provides encryption functionality
 
 ### Script engine
