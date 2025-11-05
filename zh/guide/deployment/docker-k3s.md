@@ -27,7 +27,6 @@
 可以先建立一个空目录，然后在里面新建一个文件 `compose.yml`，这里便记录了 CdsCTF 和其中间件的镜像及依赖关系。
 
 ```yaml
-version: "3.0"
 services:
   server:
     image: docker.io/elabosak233/cdsctf:1.8.1
@@ -53,7 +52,7 @@ services:
       POSTGRES_PASSWORD: cdsctf
       POSTGRES_DB: cdsctf
     volumes:
-      - "db:/var/lib/postgresql/data"
+      - "db:/var/lib/postgresql/18/docker"
     networks:
       cdsnet:
 
