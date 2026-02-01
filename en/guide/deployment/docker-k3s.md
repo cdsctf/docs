@@ -10,7 +10,10 @@ Once that's done, Docker is fully installed.
 
 Managing multiple middleware components using standalone Docker commands can get cumbersome. That's why we use Docker Compose.
 
-Start by creating an empty directory, and then add a `compose.yml` file to define the images and dependencies for CdsCTF and its middleware:
+Start by creating an empty directory, and then add a `compose.yml` file to define the images and dependencies for CdsCTF and its middleware.
+
+> [!NOTE]
+> Telemetry facilities (e.g. OpenTelemetry Collector) are **not** provided with this Compose. If you need observability, see [Observability](../derivative/observability) and deploy a Collector and backends yourself.
 
 ```yaml
 services:
@@ -26,9 +29,6 @@ services:
       - db
       - queue
       - cache
-    networks:
-      cdsnet:
-        ipv4_address: "172.20.0.10"
 
   db:
     image: docker.io/library/postgres:18-alpine
@@ -39,8 +39,6 @@ services:
       POSTGRES_DB: cdsctf
     volumes:
       - "db:/var/lib/postgresql/18/docker"
-    networks:
-      cdsnet:
 
   queue:
     image: docker.io/library/nats:2-alpine
@@ -50,46 +48,23 @@ services:
       - "--sd=/data"
     volumes:
       - "queue:/data"
-    networks:
-      cdsnet:
 
   cache:
     image: docker.io/valkey/valkey:9-alpine
     restart: always
     volumes:
       - "cache:/data"
-    networks:
-      cdsnet:
-
-  otel:
-    image: docker.io/otel/opentelemetry-collector:latest
-    ports:
-      - "127.0.0.1:2345:2345"
-    volumes:
-      - "./otel-config.yml:/otel-config.yml:ro"
-    command: ["--config", "/otel-config.yml"]
-    restart: unless-stopped
-    networks:
-      cdsnet:
 
 volumes:
   server:
   db:
   queue:
   cache:
-
-networks:
-  cdsnet:
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: "172.20.0.0/24"
 ```
 
 If this Compose file seems overwhelming, don't hesitate to ask an LLM for help.
 
-In this configuration, we define a Docker network called `cdsnet` using the `172.20.0.0/24` subnet. All containers will receive an address within this range. The server service is explicitly assigned `172.20.0.10`, but you're free to change these values as needed. Predefining the network helps with Kubernetes integration, as we'll see later.
+No custom network is defined here; Compose will use the default network. Services can reach each other by service name (e.g. `db`, `queue`, `cache`).
 
 After that, in the same directory:
 
@@ -117,19 +92,25 @@ clusters:
 # ...
 ```
 
-But for the server container to access the K8s API, you'll need to change `127.0.0.1` to the Docker network gateway, typically `172.20.0.1`, resulting in:
+CdsCTF's server runs inside a container and must reach the host's K3s API via the **gateway** of the Compose default network, not `127.0.0.1`.
+
+To get the gateway IP, run:
+
+```bash
+docker network inspect <network_name>
+```
+
+The default Compose network is usually named after the project directory plus `_default` (e.g. `cdsctf_default` for a directory named `cdsctf`). In the command output, find `IPAM` → `Config` → `Gateway`; that value is the gateway IP (e.g. `172.18.0.1`). Update `k8s.yml` so `server` is `https://<gateway_IP>:6443`, for example:
 
 ```yaml
 apiVersion: v1
 clusters:
   - cluster:
       certificate-authority-data: ...
-      server: https://172.20.0.1:6443
+      server: https://172.18.0.1:6443
     name: default
 # ...
 ```
-
-The reason: CdsCTF's server runs inside Docker and cannot access the K3s API on the host via `127.0.0.1`; the gateway `172.20.0.1` is the host from the container's perspective.
 
 If you run `docker compose up` and see errors related to connecting to the Kubernetes cluster, you may need to reconfigure K3s certificates. See the Q&A section for guidance.
 

@@ -166,7 +166,7 @@ kubectl get nodes -o wide
 
 ## `observe`
 
-可观测性：日志与 OTLP 数据导出。
+可观测性：日志与 OTLP 数据导出。可观测性设施（如 OpenTelemetry Collector）不随 Compose 或 Helm Chart 提供，需自行部署后再配置端点。
 
 | 字段 | 说明 |
 |------|------|

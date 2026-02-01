@@ -4,6 +4,9 @@
 
 在开始之前，你可能需要准备一个 [Helm](https://helm.sh/)。
 
+> [!NOTE]
+> 可观测性设施不随 Helm Chart 提供；如需可观测性，请参考 [可观测性](../derivative/observability) 自行部署 Collector 及后端。
+
 你如果无法正常使用 `helm` 命令，可以先输入一遍这个命令：
 
 ```bash
@@ -65,7 +68,7 @@ service:
 
 ports:
   web:
-      insecure: true
+    insecure: true
     proxyProtocol:
       insecure: true
   websecure:

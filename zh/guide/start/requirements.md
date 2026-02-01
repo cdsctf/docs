@@ -15,11 +15,11 @@
 
 | 组件 | 用途 |
 |------|------|
-| **OpenTelemetry Collector** | 接收 CdsCTF 的 OTLP 数据（Metric / Trace / Log），见 [可观测性](../derivative/observability) |
+| **OpenTelemetry Collector** | 接收 CdsCTF 的 OTLP 数据（Metric / Trace / Log），见 [可观测性](../derivative/observability)。不随 Compose 或 Helm Chart 提供，需自行部署。 |
 
 ## 部署方式与要求
 
 - **Docker + K3s**：宿主机需安装 Docker CE 与 Docker Compose；K3s 可装在同一台或另一台机器，用于提供题目环境。
-- **仅 K3s**：只需 K3s 集群（可单节点），CdsCTF 及依赖（PostgreSQL、Valkey、NATS 等）均部署在集群内，见 [仅 K3s](../deployment/k3s-only)。
+- **仅 K3s**：只需 K3s 集群（可单节点），通过 [官方 Helm Chart](https://github.com/cdsctf/helm-charts) 部署 CdsCTF 及依赖，见 [仅 K3s](../deployment/k3s-only)。
 
 所有运行期配置（数据库连接、缓存、队列、集群等）见 [配置文件](../deployment/config)。

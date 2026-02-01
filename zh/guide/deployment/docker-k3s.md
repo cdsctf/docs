@@ -26,6 +26,9 @@
 
 可以先建立一个空目录，然后在里面新建一个文件 `compose.yml`，这里便记录了 CdsCTF 和其中间件的镜像及依赖关系。
 
+> [!NOTE]
+> 可观测性（Telemetry）设施（如 OpenTelemetry Collector）不随本 Compose 提供；如需可观测性，请参考 [可观测性](../derivative/observability) 自行部署 Collector 及后端。
+
 ```yaml
 services:
   server:
@@ -40,9 +43,6 @@ services:
       - db
       - queue
       - cache
-    networks:
-      cdsnet:
-        ipv4_address: "172.20.0.10"
 
   db:
     image: docker.io/library/postgres:18-alpine
@@ -53,8 +53,6 @@ services:
       POSTGRES_DB: cdsctf
     volumes:
       - "db:/var/lib/postgresql/18/docker"
-    networks:
-      cdsnet:
 
   queue:
     image: docker.io/library/nats:2-alpine
@@ -64,46 +62,23 @@ services:
       - "--sd=/data"
     volumes:
       - "queue:/data"
-    networks:
-      cdsnet:
 
   cache:
     image: docker.io/valkey/valkey:9-alpine
     restart: always
     volumes:
       - "cache:/data"
-    networks:
-      cdsnet:
-
-  otel:
-    image: docker.io/otel/opentelemetry-collector:latest
-    ports:
-      - "127.0.0.1:2345:2345"
-    volumes:
-      - "./otel-config.yml:/otel-config.yml:ro"
-    command: ["--config", "/otel-config.yml"]
-    restart: unless-stopped
-    networks:
-      cdsnet:
 
 volumes:
   server:
   db:
   queue:
   cache:
-
-networks:
-  cdsnet:
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: "172.20.0.0/24"
 ```
 
 如果你在短时间内无法理解这段 Compose，不妨寻求 LLM 的帮助。
 
-这里我们定义了一个 Docker 网络 `cdsnet`，并且 IP 段在 `172.20.0.0/24` 内，即所有在此 Compose 文件中提到的容器，其网络地址都会处于这段区间内。但有一个比较特殊，即 server 服务，我们指定了其 IP 地址为 `172.20.0.10`。当然，这些配置你都可以随意更改。后续会解释为什么建议预先设定好网络。
+此处未显式定义网络，Compose 会使用默认网络，各服务可通过服务名（如 `db`、`queue`、`cache`）互相访问。
 
 然后我们需要在同一个目录下创建 `configs` 目录，这个目录将挂载到 CdsCTF 后端容器内（对应 `/etc/cdsctf`），用于存放 CdsCTF 的配置文件。
 
@@ -133,19 +108,25 @@ clusters:
 # ...
 ```
 
-如果你的 `compose.yml` 对于网络的配置与上文写法一致，那么你需要改成这样：
+CdsCTF 的 backend 运行在容器内，需要从容器内访问宿主机上的 K3s API，因此不能使用 `127.0.0.1`，而应使用该 Compose 默认网络在宿主机上的**网关地址**。
+
+先用下面命令查看默认网络的网关 IP。Compose 的默认网络名一般为「当前目录名 + `_default`」，例如目录为 `cdsctf` 时网络名为 `cdsctf_default`：
+
+```bash
+docker network inspect <网络名>
+```
+
+在输出 JSON 中，找到 `IPAM` → `Config` → `Gateway`，其值即为网关 IP（例如 `172.18.0.1`）。将 `k8s.yml` 里的 `server` 从 `https://127.0.0.1:6443` 改为 `https://<网关IP>:6443`，例如：
 
 ```yaml
 apiVersion: v1
 clusters:
   - cluster:
       certificate-authority-data: ...
-      server: https://172.20.0.1:6443
+      server: https://172.18.0.1:6443
     name: default
 # ...
 ```
-
-解释一下原因，实际上需要对 Kubernetes 进行控制的是 CdsCTF 的 backend。那么对于 backend 而言，Kubernetes 并不存在于 `127.0.0.1`，而是在此 Docker 网络下的宿主机 `172.20.0.1`（通常最后一位是 `1`）。
 
 此时如果你在目录下运行 `docker compose up` 启动这个 Compose，你若发现 server 的报错是无法连接 Cluster，我们需要为 K3s 重新配置一下证书，具体可参考 Q&A。
 

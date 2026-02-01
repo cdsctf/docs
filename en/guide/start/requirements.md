@@ -15,11 +15,11 @@ Before deploying CdsCTF, you need the following components. Version suggestions 
 
 | Component | Purpose |
 |-----------|---------|
-| **OpenTelemetry Collector** | Receives OTLP data (metrics, traces, logs) from CdsCTF; see [Observability](../derivative/observability) |
+| **OpenTelemetry Collector** | Receives OTLP data (metrics, traces, logs) from CdsCTF; see [Observability](../derivative/observability). Not provided with Compose or the Helm Chart; deploy it yourself. |
 
 ## By deployment type
 
 - **Docker + K3s**: Host needs Docker CE and Docker Compose; K3s can run on the same or another machine to provide challenge environments.
-- **K3s only**: Only a K3s cluster (single-node is fine); CdsCTF and dependencies (PostgreSQL, Valkey, NATS, etc.) all run inside the cluster; see [K3s Only](../deployment/k3s-only).
+- **K3s only**: Only a K3s cluster (single-node is fine); deploy CdsCTF and dependencies via the [official Helm Chart](https://github.com/cdsctf/helm-charts); see [K3s Only](../deployment/k3s-only).
 
 Runtime configuration (database, cache, queue, cluster, etc.) is documented in [Configuration](../deployment/config).

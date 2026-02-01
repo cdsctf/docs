@@ -166,7 +166,7 @@ Local media storage path (e.g. uploads).
 
 ## `observe`
 
-Observability: logging and OTLP exporter.
+Observability: logging and OTLP exporter. Telemetry facilities (e.g. OpenTelemetry Collector) are not provided with Compose or the Helm Chart; deploy them yourself, then set the endpoint in config.
 
 | Field | Description |
 |-------|-------------|

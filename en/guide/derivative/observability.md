@@ -2,6 +2,9 @@
 
 CdsCTF uses the **OpenTelemetry SDK** to collect metrics, traces, and logs, and sends this data to an OpenTelemetry Collector via the **OTLP** protocol. The Collector then forwards data to backends (e.g. Prometheus, Jaeger, Loki) according to its configuration, providing observability.
 
+> [!NOTE]
+> Telemetry facilities (e.g. OpenTelemetry Collector) are **not** provided with Docker Compose or the Helm Chart; you must deploy them yourself.
+
 > [!TIP] Why observability?
 >
 > For a CTF platform, observability helps monitor application health, persist and query logs (e.g. with Loki), and perform distributed tracing (e.g. with Jaeger), making debugging and operations easier.

@@ -2,6 +2,9 @@
 
 CdsCTF 通过 **OpenTelemetry SDK** 采集指标（Metric）、追踪（Trace）与日志（Log），并使用 **OTLP** 协议将数据发送到 OpenTelemetry Collector。Collector 再根据配置将数据转发到不同后端（如 Prometheus、Jaeger、Loki），从而实现可观测性。
 
+> [!NOTE]
+> 可观测性设施（如 OpenTelemetry Collector）**不随** Docker Compose 或 Helm Chart 提供，需自行部署。
+
 > [!TIP] 为什么需要可观测性？
 >
 > 对 CTF 平台而言，可观测性有助于监控应用状态、配合 Loki 等做日志持久化与检索、配合 Jaeger 等做分布式追踪，便于排障与运维。
