@@ -15,7 +15,7 @@ Before deploying CdsCTF, you need the following components. Version suggestions 
 
 | Component | Purpose |
 |-----------|---------|
-| **OpenTelemetry Collector** | Receives OTLP data (metrics, traces, logs) from CdsCTF; see [Observability](../derivative/telemetry) |
+| **OpenTelemetry Collector** | Receives OTLP data (metrics, traces, logs) from CdsCTF; see [Observability](../derivative/observability) |
 
 ## By deployment type
 

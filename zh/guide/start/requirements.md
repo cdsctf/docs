@@ -15,7 +15,7 @@
 
 | 组件 | 用途 |
 |------|------|
-| **OpenTelemetry Collector** | 接收 CdsCTF 的 OTLP 数据（Metric / Trace / Log），见 [可观测性](../derivative/telemetry) |
+| **OpenTelemetry Collector** | 接收 CdsCTF 的 OTLP 数据（Metric / Trace / Log），见 [可观测性](../derivative/observability) |
 
 ## 部署方式与要求
 
