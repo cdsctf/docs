@@ -5,8 +5,10 @@ export default defineConfig({
   description:
     "The CdsCTF project is an open-source, high-performance, Jeopardy-style's CTF platform. ",
   themeConfig: {
-    nav: [{ text: "Guide", link: "/guide/start/introduction" }],
-
+    nav: [
+      { text: "Guide", link: "/guide/start/introduction" },
+      { text: "Feature", link: "/feature/concept" },
+    ],
     sidebar: {
       "/guide": [
         {
@@ -17,8 +19,12 @@ export default defineConfig({
               link: "/guide/start/introduction",
             },
             {
-              text: "Tech Stack",
-              link: "/guide/start/tech-stack",
+              text: "Requirements",
+              link: "/guide/start/requirements",
+            },
+            {
+              text: "Glossary",
+              link: "/guide/start/glossary",
             },
           ],
         },
@@ -47,8 +53,8 @@ export default defineConfig({
           text: "Derivative",
           items: [
             {
-              text: "Telemetry",
-              link: "/guide/derivative/telemetry",
+              text: "Observability",
+              link: "/guide/derivative/observability",
             },
             {
               text: "Reverse Proxy",

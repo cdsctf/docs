@@ -35,7 +35,7 @@
 > [!TIP] 针对国内用户，可以使用 K3s 的加速安装命令：
 >
 > ```bash
-> curl –sfL \
+> curl -sfL \
 >     https://rancher-mirror.rancher.cn/k3s/k3s-install.sh | \
 >     INSTALL_K3S_MIRROR=cn sh -s - \
 >     --system-default-registry "registry.cn-hangzhou.aliyuncs.com"

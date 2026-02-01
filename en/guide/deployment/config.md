@@ -1,20 +1,62 @@
 # Configuration
 
-The `config.toml` file is required to run the CdsCTF core service. It provides environment configuration for various middleware services used by CdsCTF. This section will explain each field in detail.
+CdsCTF supports two configuration methods: **environment variables** (recommended) and **config file**. Environment variables take precedence over the config file when both are set.
 
-> [!IMPORTANT] Please note that after modifying config.toml, you must restart the CdsCTF instance for the changes to take effect.
+> [!TIP] Prefer environment variables for deployment — they are easier to manage in containers and CI/CD, and avoid committing secrets to config files.
+
+## Environment Variables
+
+All configuration can be set via environment variables with the prefix `CDSCTF_`. Nested keys use double underscores `__`.
+
+Examples:
+
+- `CDSCTF_SERVER__HOST=0.0.0.0`
+- `CDSCTF_DB__HOST=db`
+- `CDSCTF_DB__PASSWORD=your_password`
+- `CDSCTF_OBSERVE__LOGGER__LEVEL=info`
+- `CDSCTF_OBSERVE__EXPORTER__ENABLED=true`
+- `CDSCTF_CLUSTER__TRAFFIC=proxy`
+
+## Config File
+
+The config file is optional. If present, it is loaded from the first path that exists:
+
+1. `/etc/cdsctf/config.toml`
+2. `~/.config/cdsctf/config.toml`
+3. `./config/config.toml`
+4. `./data/config/config.toml`
+
+> [!IMPORTANT] After changing the config file or environment variables, restart the CdsCTF instance for changes to take effect.
+
+Example `config.toml`:
 
 ```toml
 [server]
 host = "0.0.0.0"
 port = 8888
 frontend = "./dist"
+cors_origins = "*"
+
+[server.rate_limit]
+enabled = true
+burst_restore_rate = 100
+burst_size = 512
 
 [media]
 path = "./data/media"
 
-[logger]
-level = "info,sqlx=debug,sea_orm=debug,cds_web=debug"
+[observe]
+service_name = "cdsctf"
+
+[observe.logger]
+level = "info"
+
+[observe.exporter]
+enabled = false
+# endpoint = "http://telemetry:4317"
+# metric_endpoint = "..."
+# log_endpoint = "..."
+# trace_endpoint = "..."
 
 [db]
 host = "db"
@@ -40,63 +82,108 @@ namespace = "cdsctf-challenges"
 auto_infer = true
 config_path = "~/.kube/config"
 traffic = "proxy"
+public_entry = "0.0.0.0"
+egress_excluded_cidrs = []
 
-[cluster.public_entries]
-"ubuntu" = "127.0.0.1"
-
-[telemetry]
-is_enabled = false
-protocol = "grpc"
-endpoint_url = "http://telemetry:4317"
-
-[jwt]
-secret = "A_R4ND0M_4TR1NG"
-expiration = 43200
+# For traffic = "expose", set public_entry to the node's public IP or hostname.
+# egress_excluded_cidrs: CIDRs to exclude from egress (optional).
 ```
+
+## `server`
+
+HTTP server and frontend.
+
+| Field | Description |
+|-------|-------------|
+| `host` | Bind address (default: `0.0.0.0`) |
+| `port` | Port (default: `8888`) |
+| `frontend` | Path to frontend static files (default: `./dist`) |
+| `cors_origins` | CORS allowed origins (default: `*`) |
+| `rate_limit.enabled` | Enable rate limiting (default: `true`) |
+| `rate_limit.burst_restore_rate` | Tokens restored per second (default: `100`) |
+| `rate_limit.burst_size` | Max burst size (default: `512`) |
 
 ## `db`
 
-Configuration for the PostgreSQL database.
+PostgreSQL database connection.
+
+| Field | Description |
+|-------|-------------|
+| `host` | Database host |
+| `port` | Port (default: `5432`) |
+| `dbname` | Database name |
+| `username` | Username |
+| `password` | Password |
+| `ssl_mode` | SSL mode (e.g. `disable`) |
 
 ## `queue`
 
-Configuration for the NATS message queue.
+NATS message queue.
+
+| Field | Description |
+|-------|-------------|
+| `host` | NATS host |
+| `port` | Port (default: `4222`) |
+| `username` | Optional username |
+| `password` | Optional password |
+| `token` | Optional auth token |
+| `tls` | Use TLS (default: `false`) |
 
 ## `cache`
 
-Configuration for the Valkey cache.
+Valkey (Redis-compatible) cache.
+
+| Field | Description |
+|-------|-------------|
+| `url` | Connection URL (e.g. `redis://cache:6379`) |
 
 ## `cluster`
 
-Configuration for Kubernetes.
+Kubernetes cluster for dynamic challenge environments.
 
-### `namespace`
+| Field | Description |
+|-------|-------------|
+| `namespace` | Namespace for challenge resources (default: `cdsctf-challenges`). For K3s-only deployment, do not confuse this with the namespace where CdsCTF runs. |
+| `auto_infer` | Auto-infer kubeconfig (default: `true`), often used in K3s-only setups. |
+| `config_path` | Path to kubeconfig file (e.g. `~/.kube/config`). |
+| `traffic` | `expose` \| `proxy`. With `expose`, challenges expose ports via NodePort and `public_entry` is used. With `proxy`, access is via [WebSocketReflectorX](https://github.com/XDSEC/WebSocketReflectorX). |
+| `public_entry` | Public IP or hostname of the node (used when `traffic = "expose"`). |
+| `egress_excluded_cidrs` | Optional list of CIDRs to exclude from egress. |
 
-A string value. All resources related to dynamic challenge environments will reside in this namespace. If you're using the K3s-only deployment method, make sure not to confuse this with the namespace used for running CdsCTF itself.
-
-### `auto_infer`
-
-A boolean. Enables automatic inference of the Kubernetes configuration file — commonly used in K3s-only deployments.
-
-### `config_path`
-
-A string. Specifies the path to the Kubernetes configuration file.
-
-### `traffic`
-
-A string: `expose` | `proxy`.
-
-- If set to `expose`, the `public_entries` section must be configured, and all dynamic challenge environments will expose ports via Kubernetes NodePort services.
-- If set to `proxy`, challenge environments will be accessed through [WebsocketReflectorX](https://github.com/XDSEC/WebSocketReflectorX).
-
-### `public_entries`
-
-A map of strings to strings. Typically defines the mapping between Kubernetes node names and their corresponding public access points (IP addresses or domains).
-
-You can get the node names using the following command:
+To get node names (for reference when using `public_entry`):
 
 ```bash
 kubectl get nodes -o wide
 ```
 
-Usually, the current machine's node name is the lowercase version of its hostname.
+## `media`
+
+Local media storage path (e.g. uploads).
+
+| Field | Description |
+|-------|-------------|
+| `path` | Directory path (default: `./data/media`) |
+
+## `observe`
+
+Observability: logging and OTLP exporter.
+
+| Field | Description |
+|-------|-------------|
+| `service_name` | Service name for traces/logs (default: `cdsctf`) |
+| `logger.level` | Log level (default: `info`) |
+| `exporter.enabled` | Enable OTLP exporter (default: `false`) |
+| `exporter.endpoint` | OTLP endpoint (optional) |
+| `exporter.metric_endpoint` | Metrics endpoint (optional) |
+| `exporter.log_endpoint` | Logs endpoint (optional) |
+| `exporter.trace_endpoint` | Traces endpoint (optional) |
+
+## Admin configuration
+
+In addition to the runtime config above, the following are configured in the **admin panel** and stored in the database:
+
+- **Captcha**: hCaptcha, Cloudflare Turnstile, or built-in image/POW captcha, plus difficulty and related options
+- **Email**: SMTP and templates (e.g. verification, password reset)
+- **Site logo**: Logo image used on the frontend
+
+These are not set in `config.toml`; configure them in the admin UI after deployment.

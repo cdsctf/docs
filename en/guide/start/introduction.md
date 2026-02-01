@@ -12,7 +12,7 @@ This project is open source under the AGPL license. Any use or modification must
 ### Challenges
 
 - Highly customizable challenges: Supports multiple challenge types and configuration options
-- Diverse challenge types:：
+- Diverse challenge types:
   - Attachments: Challenges can carry fixed attachments for download
   - Dynamic environment: Automatically generated and dynamic flags are issued through container environment variables
 - More powerful submission check strategies: A more flexible flag checking mechanism based on Rune scripts

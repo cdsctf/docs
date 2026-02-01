@@ -20,7 +20,7 @@ helm repo add cdsctf https://cdsctf.github.io/helm-charts
 
 在此讲解更常用的情况，即对 CdsCTF 实例使用 NodePort 而非 ClusterIP 的方式进行访问。
 
-在本地准备一个 `vales.yaml` 文件，内容如下：
+在本地准备一个 `values.yaml` 文件，内容如下：
 
 ```yaml
 server:

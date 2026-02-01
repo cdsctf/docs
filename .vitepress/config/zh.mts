@@ -19,8 +19,12 @@ export default defineConfig({
               link: "/zh/guide/start/introduction",
             },
             {
-              text: "技术栈",
-              link: "/zh/guide/start/tech-stack",
+              text: "前置要求",
+              link: "/zh/guide/start/requirements",
+            },
+            {
+              text: "术语表",
+              link: "/zh/guide/start/glossary",
             },
           ],
         },
@@ -49,8 +53,8 @@ export default defineConfig({
           text: "衍生",
           items: [
             {
-              text: "遥测",
-              link: "/zh/guide/derivative/telemetry",
+              text: "可观测性",
+              link: "/zh/guide/derivative/observability",
             },
             {
               text: "反向代理",

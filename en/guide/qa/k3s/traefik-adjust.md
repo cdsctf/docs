@@ -1,12 +1,14 @@
-# Traefik 调整
+# Traefik Adjust
 
-我们通过改变 Traefik 的 service 来解决宿主机 80 和 443 端口只返回 `404 page not found` 的问题：
+Accessing the host on ports 80 or 443 and getting `404 page not found` is **normal when K3s is installed without excluding Traefik** (i.e. without `--disable=traefik`). K3s bundles Traefik by default and binds it to 80/443, so until you configure Ingress or change the service, those ports will show this response.
+
+To free ports 80 and 443 on the host (e.g. for Docker + K3s or other services), you can change Traefik’s Service so it no longer uses them:
 
 ```bash
 kubectl -n kube-system edit service traefik
 ```
 
-更改两个 `port`：
+Change the two `port` values as follows:
 
 ```yaml
 ports:
@@ -22,4 +24,4 @@ ports:
     targetPort: websecure
 ```
 
-这样一来，宿主机的 80 和 443 端口将由其他进程接管。
+After this, ports 80 and 443 on the host will be available for other processes (e.g. your reverse proxy or CdsCTF).
