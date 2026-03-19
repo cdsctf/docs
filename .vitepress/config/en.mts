@@ -91,6 +91,19 @@ export default defineConfig({
             },
           ],
         },
+        {
+          text: "Admin",
+          items: [
+            {
+              text: "Admin Panel",
+              link: "/feature/admin/introduction",
+            },
+            {
+              text: "Site configuration",
+              link: "/feature/admin/site-config",
+            },
+          ],
+        },
       ],
     },
   },

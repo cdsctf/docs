@@ -91,6 +91,19 @@ export default defineConfig({
             },
           ],
         },
+        {
+          text: "管理",
+          items: [
+            {
+              text: "管理后台",
+              link: "/zh/feature/admin/introduction",
+            },
+            {
+              text: "站点配置",
+              link: "/zh/feature/admin/site-config",
+            },
+          ],
+        },
       ],
     },
 

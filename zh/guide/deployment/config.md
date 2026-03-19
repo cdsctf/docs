@@ -2,33 +2,51 @@
 
 CdsCTF 支持两种配置方式：**环境变量**（推荐）和 **配置文件**。当两者同时存在时，环境变量优先于配置文件。
 
-> [!TIP] 部署时优先使用环境变量 —— 在容器和 CI/CD 中更易管理，且避免将敏感信息写入配置文件。
+> [!TIP] 部署建议
+> 部署时优先使用环境变量：在容器和 CI/CD 中更易管理，且可避免将敏感信息写入配置文件。
+
+## 配置项速览
+
+| 配置块 | 说明 |
+|--------|------|
+| [server](#server) | HTTP 服务与前端 |
+| [db](#db) | PostgreSQL 数据库 |
+| [queue](#queue) | NATS 消息队列 |
+| [cache](#cache) | Valkey/Redis 缓存 |
+| [cluster](#cluster) | Kubernetes 题目环境 |
+| [media](#media) | 媒体存储（S3 兼容） |
+| [observe](#observe) | 日志与 OTLP 可观测性 |
 
 ## 环境变量
 
-所有配置均可通过以 `CDSCTF_` 为前缀的环境变量设置。嵌套键使用双下划线 `__` 表示。
+所有配置均可通过以 `CDSCTF_` 为前缀的环境变量设置；嵌套键使用双下划线 `__` 表示。
 
-示例：
+例如：
 
-- `CDSCTF_SERVER__HOST=0.0.0.0`
-- `CDSCTF_DB__HOST=db`
-- `CDSCTF_DB__PASSWORD=your_password`
-- `CDSCTF_OBSERVE__LOGGER__LEVEL=info`
-- `CDSCTF_OBSERVE__EXPORTER__ENABLED=true`
-- `CDSCTF_CLUSTER__TRAFFIC=proxy`
+```bash
+CDSCTF_SERVER__HOST=0.0.0.0
+CDSCTF_DB__HOST=db
+CDSCTF_DB__PASSWORD=your_password
+CDSCTF_OBSERVE__LOGGER__LEVEL=info
+CDSCTF_OBSERVE__EXPORTER__ENABLED=true
+CDSCTF_CLUSTER__TRAFFIC=proxy
+CDSCTF_MEDIA__ENDPOINT=http://media:9000
+CDSCTF_MEDIA__BUCKET=cdsctf
+```
 
 ## 配置文件
 
-配置文件为可选。若存在，则按以下路径顺序查找并加载第一个存在的文件：
+配置文件为**可选**。若存在，则按以下路径顺序查找并加载**第一个存在**的文件：
 
 1. `/etc/cdsctf/config.toml`
 2. `~/.config/cdsctf/config.toml`
 3. `./config/config.toml`
 4. `./data/config/config.toml`
 
-> [!IMPORTANT] 修改配置文件或环境变量后，需重启 CdsCTF 实例才能使配置生效。
+> [!IMPORTANT] 生效方式
+> 修改配置文件或环境变量后，需**重启 CdsCTF 实例**才能使配置生效。
 
-示例 `config.toml`：
+完整示例 `config.toml` 如下：
 
 ```toml
 [server]
@@ -43,7 +61,15 @@ burst_restore_rate = 100
 burst_size = 512
 
 [media]
-path = "./data/media"
+endpoint = "http://media:9000"
+region = "us-east-1"
+bucket = "cdsctf"
+access_key = "rustfsadmin"
+secret_key = "rustfsadmin"
+prefix = ""
+path_style = true
+presigned = false
+# presigned_endpoint = "https://media.example.com"  # 可选；生成预签名 URL 时使用
 
 [observe]
 service_name = "cdsctf"
@@ -150,7 +176,7 @@ Valkey（兼容 Redis）缓存。
 | `public_entry` | 节点的公网 IP 或主机名（在 `traffic = "expose"` 时使用）。 |
 | `egress_excluded_cidrs` | 可选，需要排除出站的 CIDR 列表。 |
 
-查看节点名（配置 `public_entry` 时可参考）：
+配置 `public_entry` 时，可先查看节点名与地址：
 
 ```bash
 kubectl get nodes -o wide
@@ -158,11 +184,19 @@ kubectl get nodes -o wide
 
 ## `media`
 
-本地媒体存储路径（如上传文件）。
+媒体存储默认使用 **RustFS**（兼容 S3），用于题目附件、Logo 等上传。建议使用内网 endpoint 以节省出口流量。
 
 | 字段 | 说明 |
 |------|------|
-| `path` | 目录路径（默认：`./data/media`） |
+| `endpoint` | RustFS 或其他 S3 兼容服务端点（默认：`http://media:9000`） |
+| `region` | 区域（默认：`us-east-1`） |
+| `bucket` | 存储桶名称（默认：`cdsctf`） |
+| `access_key` | 访问密钥 |
+| `secret_key` | 私密密钥 |
+| `prefix` | 可选的对象键前缀（默认：空） |
+| `path_style` | 是否使用 path-style URL（默认：`true`） |
+| `presigned` | 是否使用预签名 URL 供客户端访问（默认：`false`） |
+| `presigned_endpoint` | 可选。设置后，预签名 URL 将使用该端点（通常为公网 URL）；否则与 `endpoint` 相同。 |
 
 ## `observe`
 
@@ -177,13 +211,3 @@ kubectl get nodes -o wide
 | `exporter.metric_endpoint` | 指标端点（可选） |
 | `exporter.log_endpoint` | 日志端点（可选） |
 | `exporter.trace_endpoint` | 链路端点（可选） |
-
-## 管理端配置
-
-除上述运行环境配置外，以下内容在**管理后台**中配置，并持久化在数据库中：
-
-- **验证码**：hCaptcha、Cloudflare Turnstile 或内置图片/POW 验证码，以及难度等
-- **邮件**：发件服务器与模板（如验证、找回密码）
-- **站点 Logo**：用于前台展示的 Logo 图片
-
-上述配置不写入 `config.toml`，需在部署后通过管理界面设置。

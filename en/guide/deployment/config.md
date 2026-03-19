@@ -2,33 +2,51 @@
 
 CdsCTF supports two configuration methods: **environment variables** (recommended) and **config file**. Environment variables take precedence over the config file when both are set.
 
-> [!TIP] Prefer environment variables for deployment — they are easier to manage in containers and CI/CD, and avoid committing secrets to config files.
+> [!TIP] Deployment tip
+> Prefer environment variables for deployment: they are easier to manage in containers and CI/CD, and avoid committing secrets to config files.
+
+## Config reference
+
+| Block | Description |
+|-------|-------------|
+| [server](#server) | HTTP server and frontend |
+| [db](#db) | PostgreSQL database |
+| [queue](#queue) | NATS message queue |
+| [cache](#cache) | Valkey/Redis cache |
+| [cluster](#cluster) | Kubernetes challenge environments |
+| [media](#media) | Media storage (S3-compatible) |
+| [observe](#observe) | Logging and OTLP observability |
 
 ## Environment Variables
 
 All configuration can be set via environment variables with the prefix `CDSCTF_`. Nested keys use double underscores `__`.
 
-Examples:
+Example:
 
-- `CDSCTF_SERVER__HOST=0.0.0.0`
-- `CDSCTF_DB__HOST=db`
-- `CDSCTF_DB__PASSWORD=your_password`
-- `CDSCTF_OBSERVE__LOGGER__LEVEL=info`
-- `CDSCTF_OBSERVE__EXPORTER__ENABLED=true`
-- `CDSCTF_CLUSTER__TRAFFIC=proxy`
+```bash
+CDSCTF_SERVER__HOST=0.0.0.0
+CDSCTF_DB__HOST=db
+CDSCTF_DB__PASSWORD=your_password
+CDSCTF_OBSERVE__LOGGER__LEVEL=info
+CDSCTF_OBSERVE__EXPORTER__ENABLED=true
+CDSCTF_CLUSTER__TRAFFIC=proxy
+CDSCTF_MEDIA__ENDPOINT=http://media:9000
+CDSCTF_MEDIA__BUCKET=cdsctf
+```
 
 ## Config File
 
-The config file is optional. If present, it is loaded from the first path that exists:
+The config file is **optional**. If present, it is loaded from the **first path that exists**:
 
 1. `/etc/cdsctf/config.toml`
 2. `~/.config/cdsctf/config.toml`
 3. `./config/config.toml`
 4. `./data/config/config.toml`
 
-> [!IMPORTANT] After changing the config file or environment variables, restart the CdsCTF instance for changes to take effect.
+> [!IMPORTANT] Taking effect
+> After changing the config file or environment variables, **restart the CdsCTF instance** for changes to take effect.
 
-Example `config.toml`:
+Full example `config.toml`:
 
 ```toml
 [server]
@@ -43,7 +61,15 @@ burst_restore_rate = 100
 burst_size = 512
 
 [media]
-path = "./data/media"
+endpoint = "http://media:9000"
+region = "us-east-1"
+bucket = "cdsctf"
+access_key = "rustfsadmin"
+secret_key = "rustfsadmin"
+prefix = ""
+path_style = true
+presigned = false
+# presigned_endpoint = "https://media.example.com"  # optional; used when generating presigned URLs
 
 [observe]
 service_name = "cdsctf"
@@ -150,7 +176,7 @@ Kubernetes cluster for dynamic challenge environments.
 | `public_entry` | Public IP or hostname of the node (used when `traffic = "expose"`). |
 | `egress_excluded_cidrs` | Optional list of CIDRs to exclude from egress. |
 
-To get node names (for reference when using `public_entry`):
+When setting `public_entry`, you can list node names and addresses with:
 
 ```bash
 kubectl get nodes -o wide
@@ -158,11 +184,19 @@ kubectl get nodes -o wide
 
 ## `media`
 
-Local media storage path (e.g. uploads).
+Media storage is **RustFS** by default (S3-compatible). Used for uploads such as challenge attachments and logos. Prefer an internal endpoint URL to save egress.
 
 | Field | Description |
 |-------|-------------|
-| `path` | Directory path (default: `./data/media`) |
+| `endpoint` | RustFS or other S3-compatible server endpoint (default: `http://media:9000`) |
+| `region` | Region (default: `us-east-1`) |
+| `bucket` | Bucket name (default: `cdsctf`) |
+| `access_key` | Access key |
+| `secret_key` | Secret key |
+| `prefix` | Optional key prefix (default: empty) |
+| `path_style` | Use path-style URLs (default: `true`) |
+| `presigned` | Use presigned URLs for client access (default: `false`) |
+| `presigned_endpoint` | Optional. When set, presigned URLs use this endpoint (typically a public URL); otherwise the same as `endpoint`. |
 
 ## `observe`
 
@@ -177,13 +211,3 @@ Observability: logging and OTLP exporter. Telemetry facilities (e.g. OpenTelemet
 | `exporter.metric_endpoint` | Metrics endpoint (optional) |
 | `exporter.log_endpoint` | Logs endpoint (optional) |
 | `exporter.trace_endpoint` | Traces endpoint (optional) |
-
-## Admin configuration
-
-In addition to the runtime config above, the following are configured in the **admin panel** and stored in the database:
-
-- **Captcha**: hCaptcha, Cloudflare Turnstile, or built-in image/POW captcha, plus difficulty and related options
-- **Email**: SMTP and templates (e.g. verification, password reset)
-- **Site logo**: Logo image used on the frontend
-
-These are not set in `config.toml`; configure them in the admin UI after deployment.
