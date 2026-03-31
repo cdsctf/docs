@@ -47,6 +47,10 @@ export default defineConfig({
               text: "仅 K3s",
               link: "/zh/guide/deployment/k3s-only",
             },
+            {
+              text: "非官方方案",
+              link: "/zh/guide/deployment/unofficial",
+            },
           ],
         },
         {

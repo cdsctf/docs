@@ -47,6 +47,10 @@ export default defineConfig({
               text: "K3s Only",
               link: "/guide/deployment/k3s-only",
             },
+            {
+              text: "Unofficial Methods",
+              link: "/guide/deployment/unofficial",
+            },
           ],
         },
         {
