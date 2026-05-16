@@ -5,7 +5,7 @@ CdsCTF 是一个基于 Rust 的现代化开源 Capture The Flag (CTF) 平台，�
 
 本项目基于 AGPL 协议开源，使用和修改均需遵守此开源协议。
 
-![主页](/images/index.webp)
+![主页](/images/home.png)
 
 ## 特性
 

@@ -5,7 +5,7 @@ Originally developed by [ElaBosak233 (Ela)](https://github.com/ElaBosak233) and 
 
 This project is open source under the AGPL license. Any use or modification must comply with this open source license.
 
-![Index](/images/index.webp)
+![Index](/images/home.png)
 
 ## Features
 

@@ -18,17 +18,15 @@ Start by creating an empty directory, and then add a `compose.yml` file to defin
 ```yaml
 services:
   server:
-    image: docker.io/elabosak233/cdsctf:1.8.1
+    image: docker.io/elabosak233/cdsctf:1.10
     ports:
       - "127.0.0.1:8888:8888"
     restart: always
-    volumes:
-      - "server:/app/data"
-      - "./configs:/etc/cdsctf"
     depends_on:
       - db
       - queue
       - cache
+      - media
 
   db:
     image: docker.io/library/postgres:18-alpine
@@ -55,11 +53,18 @@ services:
     volumes:
       - "cache:/data"
 
+  media:
+    image: rustfs/rustfs:latest
+    restart: unless-stopped
+    volumes:
+      - media:/data
+
 volumes:
   server:
   db:
   queue:
   cache:
+  media:
 ```
 
 If this Compose file seems overwhelming, don't hesitate to ask an LLM for help.
